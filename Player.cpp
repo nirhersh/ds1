@@ -1,0 +1,48 @@
+#include "Player.h"
+#include "wet1util.h"
+
+Player::Player(int playerId, int teamId, bool goalKeeper,  int gamesPlayed, int goals, int cards): m_goalKeeper(goalKeeper){
+    if(playerId < 0 || teamId < 0 || gamesPlayed < 0 || goals < 0 || cards < 0){
+        throw StatusType::INVALID_INPUT;
+    }
+    m_playerId = playerId;
+    m_teamId = teamId;
+    m_goals = goals;
+    m_cards = cards;
+}
+
+int Player::get_id(){
+    return m_playerId;
+}
+
+int Player::get_team_id(){
+    return m_teamId;
+}
+
+int Player::get_games_played(){
+    return m_gamesPlayed;
+}
+
+int Player::get_goals(){
+    return m_goals;
+}
+
+int Player::get_cards(){
+    return m_cards;
+}
+
+bool Player::is_goalkeeper(){
+    return m_goalKeeper;
+}
+
+void Player::add_games(int games){
+    m_gamesPlayed += games;
+}
+
+void Player::add_goals(int goals){
+    m_goals += goals;
+}
+
+void Player::add_cards(int cards){
+    m_cards += cards;
+}
