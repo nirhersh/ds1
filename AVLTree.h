@@ -9,7 +9,8 @@
 template <class T>
 class AVLTree{
 public:
-    AVLTree();
+    template<class K>
+    AVLTree(K key);
 
     ~AVLTree() = default;
 
@@ -27,6 +28,7 @@ public:
 
 private:
     std::unique_ptr<Node> root;
+    K m_key;
     int calc_BF(std::unique_ptr<Node> node);
     void LL_fix(std::unique_ptr<Node> node);
     void RL_fix(std::unique_ptr<Node> node);
@@ -54,7 +56,8 @@ AVLTree<T>::Node::Node(const T data) : m_data(data), height(0), m_right(nullptr)
 
 //-------------------- AVLTree Implemantation --------------------
 template <class T>
-AVLTree<T>::AVLTree(): root(nullptr){}
+template <class K>
+AVLTree<T>::AVLTree(K key): root(nullptr), m_key(key){}
 
 template <class T>
 typename AVLTree<T>::Node AVLTree<T>::search(int id){
@@ -62,9 +65,9 @@ typename AVLTree<T>::Node AVLTree<T>::search(int id){
     AVLTree<T>::Node currentNode = *root;
     while (!found)
     {
-        if (id > (currentNode->m_data).get_id()){
+        if (id > key((currentNode->m_data))){
             currentNode = *(currentNode->m_right);
-        }else if(id < (currentNode->m_data).get_id()){
+        }else if(id < key((currentNode->m_data))){
             currentNode = *(currentNode->m_left);
         }else{
             found = true;

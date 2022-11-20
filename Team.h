@@ -8,8 +8,8 @@
 
 class Team {
 public:
-    Team(int teamId, int points, int goals = 0, int cards = 0, int topScorerId = 0, int totalPlayers = 0); 
-
+    Team(int teamId, int points, int goals = 0, int cards = 0, int topScorerId = 0,
+         int totalPlayers = 0, int gamesPlayed = 0); 
 
     /*
         getters:
@@ -20,7 +20,7 @@ public:
     int get_top_scorer_id();
     int get_total_players();
     int get_id();
-
+    int get_games_played();
     /*
         setters:
     */
@@ -29,6 +29,7 @@ public:
     void add_cards(int cards);
     void set_top_scorer_id(int playerId);
     void add_players(int num);
+    void add_game();
 
 private:
     int m_teamId;
@@ -37,8 +38,7 @@ private:
     int m_cards;
     int m_topScorerId;
     int m_totalPlayers;
-
-
+    int m_gamesPlayed;
 };
 
 
