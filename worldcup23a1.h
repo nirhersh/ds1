@@ -16,12 +16,23 @@
 #define WORLDCUP23A1_H_
 
 #include "wet1util.h"
-
+#include "Player.h"
+#include "Team.h"
 class world_cup_t {
 private:
-	//
-	// Here you may add anything you want
-	//
+	class PlayerKey{
+	public:
+		int operator()(Player player) const{
+			return player.get_id();
+		}
+	};
+
+	class TeamKey{
+	public:
+		int operator()(Team Team) const{
+			return Team.get_id();
+		}
+	};
 	
 public:
 	// <DO-NOT-MODIFY> {

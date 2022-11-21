@@ -46,3 +46,25 @@ void Player::add_goals(int goals){
 void Player::add_cards(int cards){
     m_cards += cards;
 }
+
+bool operator>(const Player& first, const Player& second)
+{
+    if(first.m_goals > second.m_goals) {
+        return true;
+    }
+    if(second.m_goals > first.m_goals) {
+        return false;
+    }
+    if(first.m_cards < second.m_cards) {
+        return true;
+    }
+    if(second.m_cards < first.m_cards) {
+        return false;
+    }
+    return first.m_playerId > second.m_playerId;
+}
+
+bool operator==(const Player& first, const Player& second)
+{
+    return first.m_playerId == second.m_playerId;
+}

@@ -25,9 +25,13 @@ public:
     Player(const Player& other) = default;
 
     /*
-    Player assignment operator
+    Player assignment and equalization operators
     */
     Player& operator=(const Player& other) = default;
+
+    friend bool operator>(const Player& first, const Player& second);
+
+    friend bool operator==(const Player& first, const Player& second);
 
     /*
     getters
