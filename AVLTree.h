@@ -12,7 +12,9 @@
 template <class T, class K>
 class AVLTree{
 public:
-
+    /*
+    C'tor of the AVL Tree
+    */
     AVLTree();
 
     ~AVLTree() = default;
@@ -21,20 +23,45 @@ public:
     
     AVLTree<T, K>& operator=(const AVLTree<T, K>& other) = delete;
 
+    /*
+    Sub class of Nodes that hold the data in the tree
+    */
     class Node;
 
+    /*
+    A function that searches for a value in the tree
+    @param key: The key of the searched data
+    @return: a pointer to the data
+    */
     T* search(const K& key) const;
 
+    /*
+    A function that pushes a key-value pair into the tree
+    @param key: The key of the pushed data
+    @param item: the item to push into the tree
+    @return: a pointer to the data
+    */
     void push(T* item, K& key);
     
+    /*
+    A function that removes for a value from the tree
+    @param key: The key of the removed data
+    */
     void remove(const K& key);
 
     Node* getRoot(){
         return root;
     }
 
+    int get_size()const;
+
+    T* in_order() const;
+
+    void print_tree();
+
 private:
     Node* root;
+    int m_size;
     void fix_height(Node* node);
     void balance_tree(Node* newNode);
     Node* search_node(const K& key) const;
@@ -119,6 +146,7 @@ void AVLTree<T, K>::push(T* item, K& key){
             }
         }
     }
+    m_size++;
 }
 
 template<class T, class K>
@@ -262,7 +290,7 @@ void AVLTree<T, K>::remove(const K& key)
         currentNode = currentNode->m_parent;
         parent = currentNode->m_parent;
     } while(currentNode != root);
-
+    m_size--;
 
 
 }
@@ -292,11 +320,11 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::search_node(const K& key) const
 template<class T, class K>
 typename AVLTree<T, K>::Node* AVLTree<T, K>::remove_node(Node* nodeToRemove){
     bool isRight = false;
-    if(nodeToRemove->m_parent->m_right == nodeToRemove){
+    if(nodeToRemove->m_parent != nullptr && nodeToRemove->m_parent->m_right == nodeToRemove){
             isRight = true;;
     }
     Node* nodeToReturn;
-    if (nodeToRemove->m_height == 0)
+    if (nodeToRemove->m_right == nullptr && nodeToRemove->m_left == nullptr)
     {
         if(!isRight){
            nodeToRemove->m_parent->m_left = nullptr; 
@@ -307,7 +335,7 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::remove_node(Node* nodeToRemove){
         nodeToReturn = nodeToRemove->m_parent;
         delete nodeToRemove; 
     }
-    if(nodeToRemove->m_right != nullptr && nodeToRemove->m_left == nullptr){
+    else if(nodeToRemove->m_right != nullptr && nodeToRemove->m_left == nullptr){
         if(isRight){
             nodeToRemove->m_parent->m_right = nodeToRemove->m_right;
         }
@@ -331,15 +359,22 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::remove_node(Node* nodeToRemove){
     }
     else{
         Node* followingNode = get_following_node(nodeToRemove);
-        switch_nodes(NodeToRemove, followingNode);
-        remove_node(nodeToRemove);    
+        switch_nodes(nodeToRemove, followingNode);
+        remove_node(followingNode);    
     }
     return nodeToReturn;
 }
 
 template<class T, class K>
 void AVLTree<T, K>::switch_nodes(Node* node1, Node* node2){
-    
+    T* node1Data = node1->m_data;
+    T* node2Data = node2->m_data;
+    K key1 = node1->m_key;
+    K key2 = node2->m_key;
+    node1->m_data = node2Data;
+    node1->m_key = key2;
+    node2->m_data = node1Data;
+    node2->m_key = key1;
 }
 
 
@@ -356,6 +391,21 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::get_following_node(Node* node) cons
         node = node->m_left;
     }
     return node;
+}
+
+template<class T, class K>
+int AVLTree<T, K>::get_size()const{
+    return m_size;
+}
+
+template<class T, class K>
+T* AVLTree<T, K>::in_order() const{
+    T* inOrderTree = new int[size]();
+    Node* mostLeft = root;
+    while(mostLeft->m_left){
+        mostLeft = mostLeft->m_left;
+    }
+
 }
 
 #endif

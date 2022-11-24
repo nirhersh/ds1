@@ -25,5 +25,11 @@ public:
     }
 };
 
+class CantFitInArray : public std::exception{
+public:
+    const char* what() const noexcept override{
+        return "Can't Fit In Array: the allocated array is too small for the tree";
+    }
+};
 
 #endif //EXCEPTION_H

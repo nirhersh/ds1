@@ -5,7 +5,6 @@
 #include <stdio.h>
 
 int main(){
-    //std::cout << "fwfdew";
     AVLTree<int, int> avlTree1;
     int x = 10;
     int y = 12;
@@ -24,15 +23,17 @@ int main(){
     avlTree1.push(&b, b);
     avlTree1.push(&c, c);
     avlTree1.remove(4);
+    avlTree1.remove(11);
+    avlTree1.remove(8);
 
     std::cout<< *(avlTree1.getRoot()->m_data) << std::endl;
     std::cout<< *(avlTree1.getRoot()->m_left->m_data) << std::endl;
     std::cout<< *(avlTree1.getRoot()->m_right->m_data) << std::endl;
 
-    std::cout<< *(avlTree1.getRoot()->m_left->m_left->m_data)<< std::endl;
+    //std::cout<< *(avlTree1.getRoot()->m_left->m_left->m_data)<< std::endl;
     std::cout<< *(avlTree1.getRoot()->m_left->m_right->m_data) << std::endl;
-    std::cout<< *(avlTree1.getRoot()->m_right->m_left->m_data)<< std::endl;
-    std::cout<< *(avlTree1.getRoot()->m_right->m_right->m_data) << std::endl;
+    //std::cout<< *(avlTree1.getRoot()->m_right->m_left->m_data)<< std::endl;
+    //std::cout<< *(avlTree1.getRoot()->m_right->m_left->m_data) << std::endl;
     // std::cout<< *(avlTree1.getRoot()->m_right->m_right->m_data) << std::endl;
     }
 
