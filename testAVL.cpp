@@ -26,15 +26,14 @@ int main(){
     avlTree1.remove(11);
     avlTree1.remove(8);
 
-    std::cout<< *(avlTree1.getRoot()->m_data) << std::endl;
-    std::cout<< *(avlTree1.getRoot()->m_left->m_data) << std::endl;
-    std::cout<< *(avlTree1.getRoot()->m_right->m_data) << std::endl;
-
-    //std::cout<< *(avlTree1.getRoot()->m_left->m_left->m_data)<< std::endl;
-    std::cout<< *(avlTree1.getRoot()->m_left->m_right->m_data) << std::endl;
-    //std::cout<< *(avlTree1.getRoot()->m_right->m_left->m_data)<< std::endl;
-    //std::cout<< *(avlTree1.getRoot()->m_right->m_left->m_data) << std::endl;
-    // std::cout<< *(avlTree1.getRoot()->m_right->m_right->m_data) << std::endl;
+    int** array =  new int*[avlTree1.get_size()];
+    avlTree1.in_order(array);
+    for (size_t i = 0; i < avlTree1.get_size(); i++)
+    {
+        std::cout << *(array[i]) << ", ";
+    }
+    std::cout << std::endl;
+    delete[] array;
     }
 
 

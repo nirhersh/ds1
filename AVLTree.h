@@ -9,6 +9,13 @@
 #include <stdbool.h>
 #include <iostream>
 
+template<class T>
+class R_Node{
+public:
+    R_Node* next;
+    T* data;
+};
+
 template <class T, class K>
 class AVLTree{
 public:
@@ -55,7 +62,7 @@ public:
 
     int get_size()const;
 
-    T* in_order() const;
+    void in_order(T** array) const;
 
     void print_tree();
 
@@ -68,6 +75,7 @@ private:
     Node* remove_node(Node* nodeToRemove);
     Node* get_following_node(Node* node)const;
     void switch_nodes(Node* node1,Node* node2);
+    int in_order_recurtion(T** array, Node* current, int index = 0) const;
     int calc_BF(Node* node);
     void LL_fix(Node* node);
     void RL_fix(Node* node);
@@ -98,7 +106,7 @@ AVLTree<T, K>::Node::Node(T* data, const K& key) : m_data(data), m_key(key), m_h
 
 //-------------------- AVLTree Implemantation --------------------
 template <class T, class K>
-AVLTree<T, K>::AVLTree(): root(nullptr){}
+AVLTree<T, K>::AVLTree(): root(nullptr), m_size(0){}
 
 template <class T, class K>
 T* AVLTree<T, K>::search(const K& key) const{
@@ -381,7 +389,7 @@ void AVLTree<T, K>::switch_nodes(Node* node1, Node* node2){
 
 
 template<class T, class K> 
-typename AVLTree<T, K>::Node* AVLTree<T, K>::get_following_node(Node* node) const
+typename AVLTree<T, K>::Node* AVLTree<T, K>::get_following_node(Node* node) const //if there is no right son return the parent
 {
     assert(node != nullptr);
     assert(node->m_right != nullptr);
@@ -393,19 +401,48 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::get_following_node(Node* node) cons
     return node;
 }
 
+
 template<class T, class K>
 int AVLTree<T, K>::get_size()const{
     return m_size;
 }
 
 template<class T, class K>
-T* AVLTree<T, K>::in_order() const{
-    T* inOrderTree = new int[size]();
-    Node* mostLeft = root;
-    while(mostLeft->m_left){
-        mostLeft = mostLeft->m_left;
+void AVLTree<T ,K>::in_order(T** array) const{
+    in_order_recurtion(array, root, 0);
     }
 
+
+
+// template<class T, class K>
+// void AVLTree<T, K>::in_order_recurtion(R_Node<T>* list, Node* current) const //should it be T**? do we want an array of pointers to the players?
+// {
+//     if(current == nullptr){
+//         return;
+//     }
+//     //std::cout << "entered " << *(current->m_data) << std::endl;
+//     in_order_recurtion(list, current->m_left);
+//     assert(current != nullptr);
+//     std::cout << "list " << *(current->m_data) << std::endl;
+//     list->data = (current->m_data); 
+//     list->next = new R_Node<T>;
+//     list = list->next;
+//     in_order_recurtion(list, current->m_right);
+// }
+
+template<class T, class K>
+int AVLTree<T, K>::in_order_recurtion(T** array, Node* current, int index) const
+{
+    if(current == nullptr){
+        return index;
+    }
+    //std::cout << "entered " << *(current->m_data) << std::endl;
+    index = in_order_recurtion(array, current->m_left, index);
+    if(index >= m_size){
+        return index;
+    }
+    array[index++] = current->m_data;
+    return in_order_recurtion(array, current->m_right, index);
 }
 
 #endif
