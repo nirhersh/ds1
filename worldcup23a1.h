@@ -18,6 +18,9 @@
 #include "wet1util.h"
 #include "Player.h"
 #include "Team.h"
+#include "AVLTree.h"
+#include "exception.h"
+#include <assert.h>
 class world_cup_t {
 private:
 	class PlayerKey{
@@ -33,6 +36,12 @@ private:
 			return Team.get_id();
 		}
 	};
+
+	AVLTree<Player, int> allPlayersId;
+	AVLTree<Player, Player> allPlayersGoals;
+	AVLTree<Team, int> teams;
+	AVLTree<Team, int> qualifiedTeams;
+	Player* bestPlayer;
 	
 public:
 	// <DO-NOT-MODIFY> {

@@ -64,18 +64,27 @@ public:
 
     void in_order(T** array) const;
 
+    void in_order(Node* array[]) const;
+
     void print_tree();
+
+    bool exists(const K& key) const;
+
+    void fix_tree_height();
+
+    //friend Node* unite_trees(Node* tree1, Node* Tree2, const K& newkey);
 
 private:
     Node* root;
     int m_size;
-    void fix_height(Node* node);
+    void fix_height(Node* node1);
     void balance_tree(Node* newNode);
     Node* search_node(const K& key) const;
     Node* remove_node(Node* nodeToRemove);
     Node* get_following_node(Node* node)const;
     void switch_nodes(Node* node1,Node* node2);
     int in_order_recurtion(T** array, Node* current, int index = 0) const;
+    int in_order_recurtion(Node* array[], Node* current, int index = 0) const;
     int calc_BF(Node* node);
     void LL_fix(Node* node);
     void RL_fix(Node* node);
@@ -99,6 +108,17 @@ public:
     friend class AVLTree<T, K>;
 };
 
+
+template <class T, class K>
+void merge(typename AVLTree<T, K>::Node* arrayTree1[], int na, typename AVLTree<T, K>::Node* arrayTree2[], int nb, typename AVLTree<T, K>::Node* newArrayTree[]);
+
+template <class T, class K>
+void unite_trees(AVLTree<T, K>& tree1, AVLTree<T, K>& tree2, AVLTree<T, K>& newTree);
+
+template <class T, class K>
+typename AVLTree<T, K>::Node* array_to_tree(T** arrayTree, int start, int end);
+
+
 //-------------------- Node Implemantation --------------------
 template <class T, class K>
 AVLTree<T, K>::Node::Node(T* data, const K& key) : m_data(data), m_key(key), m_height(0),
@@ -113,6 +133,85 @@ T* AVLTree<T, K>::search(const K& key) const{
     Node* nodeToReturn = search_node(key);
     return nodeToReturn->m_data;
 }
+
+template <class T, class K>
+void unite_trees(AVLTree<T, K>& tree1, AVLTree<T, K>& tree2, AVLTree<T, K>& newTree)
+{
+    int tree1Size = tree1.get_size();
+    int tree2Size = tree2.get_size();
+
+    typename AVLTree<T, K>::Node** arrayTree1 = new typename AVLTree<T, K>::Node*[tree1Size];
+    tree1.in_order(arrayTree1);
+    typename AVLTree<T, K>::Node** arrayTree2 = new typename AVLTree<T, K>::Node*[tree2Size];
+    tree2.in_order(arrayTree2);
+    typename AVLTree<T, K>::Node** newArrayTree = new typename AVLTree<T, K>::Node*[tree1Size + tree2Size];
+    merge(arrayTree1, tree1Size, arrayTree2,  tree2Size, newArrayTree);
+    newTree.root = array_to_tree(newArrayTree, 0, tree1Size + tree2Size - 1);
+    newTree.fix_tree_height();
+
+}
+
+template <class T, class K>
+void merge(typename AVLTree<T, K>::Node* arrayTree1[], int na, typename AVLTree<T, K>::Node* arrayTree2[],
+                                                     int nb, typename AVLTree<T, K>::Node* newArrayTree[])
+{
+    int ia, ib, ic;
+    try{
+            for(ia = ib = ic = 0; (ia < na) && (ib < nb); ic++){
+                if(arrayTree1[ia] < arrayTree2[ib]){
+                    newArrayTree[ic] = arrayTree1[ia];
+                    ia++;
+                }
+                else {
+                    newArrayTree[ic] = arrayTree2[ib];    
+                    ib++;
+                }
+                for(; ia < na; ia++, ic++) newArrayTree[ic] = arrayTree1[ia];
+                for(; ib < nb; ib++, ic++) newArrayTree[ic] = arrayTree2[ib];
+            }
+    }catch (KeyAlreadyExists& err){
+            assert(1);
+    }
+}
+
+
+template <class T, class K>
+typename AVLTree<T, K>::Node* array_to_tree(typename AVLTree<T, K>::Node* arrayTree[], int start, int end)
+{
+    if(start > end){
+        return nullptr;
+    }
+    int mid = (start + end) / 2;
+    typename AVLTree<T, K>::Node* newNode = new typename AVLTree<T, K>::Node;
+    newNode->m_data = arrayTree[mid]->m_data;
+    newNode->m_key = arrayTree[mid]->m_key;
+
+    newNode->m_left = array_to_tree(arrayTree, start, mid - 1);
+    newNode->m_left->m_parent = newNode;
+
+    newNode->m_right = array_to_tree(arrayTree, mid + 1, end);
+    newNode->m_right->m_parent = newNode;
+
+    return newNode;
+}
+
+template <class T, class K>
+void AVLTree<T, K>::fix_tree_height()
+{
+    if(!root){
+        return;
+    }
+    assert(root != nullptr);
+    fix_height(root->m_left);
+    fix_height(root->m_right);
+    fix_height(root);
+}
+
+
+
+
+
+
 
 template <class T, class K>
 void AVLTree<T, K>::push(T* item, K& key){
@@ -274,12 +373,11 @@ int AVLTree<T, K>::calc_BF(Node* node)
 }
 
 template<class T, class K>
-void AVLTree<T, K>::fix_height(Node* node)
+void AVLTree<T, K>::fix_height(Node* node1)
 {
-    assert(node != nullptr);
-    int leftTreeH = node->m_left == nullptr ? -1 : node->m_left->m_height;
-    int rightTreeH = node->m_right == nullptr ? -1 : node->m_right->m_height;
-    node->m_height = leftTreeH > rightTreeH ? 1 + leftTreeH : 1 + rightTreeH;
+    int leftTreeH = node1->m_left == nullptr ? -1 : node1->m_left->m_height;
+    int rightTreeH = node1->m_right == nullptr ? -1 : node1->m_right->m_height;
+    node1->m_height = leftTreeH > rightTreeH ? 1 + leftTreeH : 1 + rightTreeH;
 }
 
 template<class T, class K>
@@ -412,23 +510,10 @@ void AVLTree<T ,K>::in_order(T** array) const{
     in_order_recurtion(array, root, 0);
     }
 
-
-
-// template<class T, class K>
-// void AVLTree<T, K>::in_order_recurtion(R_Node<T>* list, Node* current) const //should it be T**? do we want an array of pointers to the players?
-// {
-//     if(current == nullptr){
-//         return;
-//     }
-//     //std::cout << "entered " << *(current->m_data) << std::endl;
-//     in_order_recurtion(list, current->m_left);
-//     assert(current != nullptr);
-//     std::cout << "list " << *(current->m_data) << std::endl;
-//     list->data = (current->m_data); 
-//     list->next = new R_Node<T>;
-//     list = list->next;
-//     in_order_recurtion(list, current->m_right);
-// }
+template<class T, class K>
+void AVLTree<T ,K>::in_order(Node* array[]) const{
+    in_order_recurtion(array, root, 0);
+    }
 
 template<class T, class K>
 int AVLTree<T, K>::in_order_recurtion(T** array, Node* current, int index) const
@@ -443,6 +528,32 @@ int AVLTree<T, K>::in_order_recurtion(T** array, Node* current, int index) const
     }
     array[index++] = current->m_data;
     return in_order_recurtion(array, current->m_right, index);
+}
+
+template<class T, class K>
+int AVLTree<T, K>::in_order_recurtion(Node* array[], Node* current, int index) const
+{
+    if(current == nullptr){
+        return index;
+    }
+    //std::cout << "entered " << *(current->m_data) << std::endl;
+    index = in_order_recurtion(array, current->m_left, index);
+    if(index >= m_size){
+        return index;
+    }
+    array[index++] = current;
+    return in_order_recurtion(array, current->m_right, index);
+}
+
+template<class T, class K>
+bool AVLTree<T, K>::exists(const K& key) const
+{
+    try{
+        Node* temp = search_node(key);
+    } catch (KeyDoesntExists& var) {
+        return false;
+    }
+    return true;
 }
 
 #endif

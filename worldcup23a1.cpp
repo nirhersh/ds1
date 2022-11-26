@@ -13,7 +13,22 @@ world_cup_t::~world_cup_t()
 
 StatusType world_cup_t::add_team(int teamId, int points)
 {
-	// TODO: Your code goes here
+	if(teamId <= 0 || points < 0){
+		return StatusType::INVALID_INPUT;
+	}
+	Team* newTeam;
+	try{
+	newTeam = new Team(teamId, points);
+	} catch(std::bad_alloc& exc) {
+		assert(1);
+		return StatusType::ALLOCATION_ERROR;
+	}
+	try{
+		teams.push(newTeam, teamId);
+	} catch(KeyAlreadyExists& exc) {
+		assert(1);
+		return StatusType::FAILURE;
+	}
 	return StatusType::SUCCESS;
 }
 
@@ -63,7 +78,15 @@ output_t<int> world_cup_t::get_team_points(int teamId)
 
 StatusType world_cup_t::unite_teams(int teamId1, int teamId2, int newTeamId)
 {
-	// TODO: Your code goes here
+	if(teamId1 <= 0 || teamId2 <= 0 || teamId1 == teamId2 || newTeamId <= 0){
+		return StatusType::INVALID_INPUT;
+	}
+	if(teams.exists(newTeamId) && newTeamId != teamId1 && newTeamId != teamId2){
+		return StatusType::FAILURE;
+	}
+	if(!(teams.exists(teamId1)) || !(teams.exists(teamId2))){
+		return StatusType::FAILURE;
+	}
 	return StatusType::SUCCESS;
 }
 

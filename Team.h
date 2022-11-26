@@ -4,6 +4,8 @@
 #define TEAM_H
 
 #include "wet1util.h"
+#include "AVLTree.h"
+#include "Player.h"
 
 
 class Team {
@@ -39,6 +41,9 @@ private:
     int m_topScorerId;
     int m_totalPlayers;
     int m_gamesPlayed;
+    Player* TopDcorer;
+    AVLTree<Player, int> playersById;
+    AVLTree<Player, Player> PlayersByGoals;
 };
 
 

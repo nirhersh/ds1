@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 int main(){
-    AVLTree<int, int> avlTree1;
+    AVLTree<int, int> avlTree1, avlTree2;
     int x = 10;
     int y = 12;
     int z = 11;
@@ -33,6 +33,29 @@ int main(){
         std::cout << *(array[i]) << ", ";
     }
     std::cout << std::endl;
+
+    int x1 = 1;
+    int y1 = 2;
+    int z1 = 111;
+    int w1 = 4;
+
+
+    avlTree2.push(&x1, x1);
+    avlTree2.push(&y1, y1);
+    avlTree2.push(&z1, z1);
+    avlTree2.push(&w1, w1);
+
+    int** array1 =  new int*[avlTree2.get_size()];
+    avlTree2.in_order(array1);
+    for (size_t i = 0; i < avlTree2.get_size(); i++)
+    {
+        std::cout << *(array1[i]) << ", ";
+    }
+    std::cout << std::endl;  
+
+    AVLTree<int, int> avlTree3;
+    unite_trees(avlTree1, avlTree2, avlTree3);  
+
     delete[] array;
     }
 
