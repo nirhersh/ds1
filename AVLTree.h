@@ -70,7 +70,7 @@ public:
 
     bool exists(const K& key) const;
 
-    void fix_tree_height();
+    static void fix_tree_height(Node*);
  
     static void unite_trees(AVLTree<T, K>& tree1, AVLTree<T, K>& tree2, AVLTree<T, K>& newTree);
 
@@ -78,7 +78,7 @@ public:
 private:
     Node* root;
     int m_size;
-    void fix_height(Node* node1);
+    static void fix_height(Node* node1);
     void balance_tree(Node* newNode);
     Node* search_node(const K& key) const;
     Node* remove_node(Node* nodeToRemove);
@@ -147,13 +147,29 @@ void AVLTree<T, K>::unite_trees(AVLTree<T, K>& tree1, AVLTree<T, K>& tree2, AVLT
 
     typename AVLTree<T, K>::Node** arrayOfTree1 = new typename AVLTree<T, K>::Node*[tree1Size];
     tree1.in_order(arrayOfTree1);
+    for (int i = 0; i < tree1Size; i++)
+    {
+        std::cout << "tree 1 " << *(arrayOfTree1[i]->m_data) << std::endl;
+    }
     typename AVLTree<T, K>::Node** arrayOfTree2 = new typename AVLTree<T, K>::Node*[tree2Size];
     tree2.in_order(arrayOfTree2);
+    for (int i = 0; i < tree2Size; i++)
+    {
+        std::cout << "tree 2 " << *(arrayOfTree2[i]->m_data) << std::endl;
+    }
     typename AVLTree<T, K>::Node** newArrayTree = new typename AVLTree<T, K>::Node*[tree1Size + tree2Size];
-    merge(arrayOfTree1, tree1Size, arrayOfTree2,  tree2Size, newArrayTree);
+    merge(arrayOfTree1, tree1Size, arrayOfTree2,  tree2Size, newArrayTree); 
+    for (int i = 0; i < tree2Size + tree1Size; i++)
+    {
+        std::cout << "merged array " << *(newArrayTree[i]->m_data) << std::endl;
+    }
     newTree.root = array_to_tree(newArrayTree, 0, tree1Size + tree2Size - 1);
     assert(newTree.root != nullptr);
-    newTree.fix_tree_height();
+    newTree.m_size = tree1Size + tree2Size;
+    std::cout << "the size is " << newTree.root->m_height << std::endl;
+    fix_tree_height(newTree.root);
+    std::cout << "the size is " << newTree.root->m_height << std::endl;
+
 
 }
 
@@ -161,20 +177,23 @@ template <class T, class K>
 void AVLTree<T, K>::merge(typename AVLTree<T, K>::Node* arrayTree1[], int na, typename AVLTree<T, K>::Node* arrayTree2[], 
                                                       int nb, typename AVLTree<T, K>::Node* newArrayTree[])
 {
+    std::cout << "na is " << na << " nb is " << nb << std::endl;
     int ia, ib, ic;
     try{
             for(ia = ib = ic = 0; (ia < na) && (ib < nb); ic++){
-                if(arrayTree1[ia] < arrayTree2[ib]){
+                if(arrayTree1[ia]->m_key < arrayTree2[ib]->m_key){
+                    std::cout << "the key of a is " << arrayTree1[ia]->m_key << " wey of b is " << arrayTree2[ib]->m_key << std::endl;
                     newArrayTree[ic] = arrayTree1[ia];
                     ia++;
                 }
                 else {
+                    std::cout << "the key of a is " << arrayTree1[ia]->m_key << " wey of b is " << arrayTree2[ib]->m_key << std::endl;
                     newArrayTree[ic] = arrayTree2[ib];    
                     ib++;
                 }
-                for(; ia < na; ia++, ic++) newArrayTree[ic] = arrayTree1[ia];
-                for(; ib < nb; ib++, ic++) newArrayTree[ic] = arrayTree2[ib];
             }
+        for(; ia < na; ia++, ic++) newArrayTree[ic] = arrayTree1[ia];
+        for(; ib < nb; ib++, ic++) newArrayTree[ic] = arrayTree2[ib];
     }catch (KeyAlreadyExists& err){
             assert(1);
     }
@@ -193,31 +212,28 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::array_to_tree(typename AVLTree<T, K
     std::cout << "insert " << *(newNode->m_data) << std::endl;
 
     newNode->m_left = array_to_tree(arrayTree, start, mid - 1);
-    newNode->m_left->m_parent = newNode;
+    if(newNode->m_left){
+        newNode->m_left->m_parent = newNode;
+    }
 
     newNode->m_right = array_to_tree(arrayTree, mid + 1, end);
-    newNode->m_right->m_parent = newNode;
+    if(newNode->m_left){
+        newNode->m_right->m_parent = newNode;
+    }
 
     return newNode;
 }
 
 template <class T, class K>
-void AVLTree<T, K>::fix_tree_height()
+void AVLTree<T, K>::fix_tree_height(Node* node)
 {
-    if(!root){
+    if(!node){
         return;
     }
-    assert(root != nullptr);
-    fix_height(root->m_left);
-    fix_height(root->m_right);
-    fix_height(root);
+    fix_tree_height(node->m_left);
+    fix_tree_height(node->m_right);
+    fix_height(node);
 }
-
-
-
-
-
-
 
 template <class T, class K>
 void AVLTree<T, K>::push(T* item, K& key){
