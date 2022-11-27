@@ -1,12 +1,14 @@
 #include "Player.h"
 #include "wet1util.h"
+#include "Team.h"
+#include "AVLTree.h"
 
 Player::Player(int playerId, int teamId, bool goalKeeper,  int gamesPlayed, int goals, int cards): m_goalKeeper(goalKeeper){
     if(playerId < 0 || teamId < 0 || gamesPlayed < 0 || goals < 0 || cards < 0){
         throw StatusType::INVALID_INPUT;
     }
     m_playerId = playerId;
-    m_teamId = teamId;
+    m_team = nullptr;
     m_goals = goals;
     m_cards = cards;
 }
@@ -16,7 +18,8 @@ int Player::get_id(){
 }
 
 int Player::get_team_id(){
-    return m_teamId;
+    assert(m_team != nullptr);
+    return m_team->get_id();
 }
 
 int Player::get_games_played(){
@@ -62,6 +65,11 @@ bool operator>(const Player& first, const Player& second)
         return false;
     }
     return first.m_playerId > second.m_playerId;
+}
+
+bool operator<(const Player& first, const Player& second)
+{
+    return !(first > second || first == second);
 }
 
 bool operator==(const Player& first, const Player& second)

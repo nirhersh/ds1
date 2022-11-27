@@ -28,7 +28,7 @@ int main(){
 
     int** array =  new int*[avlTree1.get_size()];
     avlTree1.in_order(array);
-    for (size_t i = 0; i < avlTree1.get_size(); i++)
+    for (int i = 0; i < avlTree1.get_size(); i++)
     {
         std::cout << *(array[i]) << ", ";
     }
@@ -47,14 +47,15 @@ int main(){
 
     int** array1 =  new int*[avlTree2.get_size()];
     avlTree2.in_order(array1);
-    for (size_t i = 0; i < avlTree2.get_size(); i++)
+    for (int i = 0; i < avlTree2.get_size(); i++)
     {
         std::cout << *(array1[i]) << ", ";
     }
+
     std::cout << std::endl;  
 
     AVLTree<int, int> avlTree3;
-    unite_trees(avlTree1, avlTree2, avlTree3);  
+    AVLTree<int, int>::unite_trees(avlTree1, avlTree2, avlTree3);  
 
     delete[] array;
     }

@@ -71,8 +71,9 @@ public:
     bool exists(const K& key) const;
 
     void fix_tree_height();
+ 
+    static void unite_trees(AVLTree<T, K>& tree1, AVLTree<T, K>& tree2, AVLTree<T, K>& newTree);
 
-    //friend Node* unite_trees(Node* tree1, Node* Tree2, const K& newkey);
 
 private:
     Node* root;
@@ -85,6 +86,8 @@ private:
     void switch_nodes(Node* node1,Node* node2);
     int in_order_recurtion(T** array, Node* current, int index = 0) const;
     int in_order_recurtion(Node* array[], Node* current, int index = 0) const;
+    static void merge(Node* arrayTree1[], int na, Node* arrayTree2[], int nb, Node* newArrayTree[]);
+    static Node* array_to_tree(Node** arrayTree, int start, int end);
     int calc_BF(Node* node);
     void LL_fix(Node* node);
     void RL_fix(Node* node);
@@ -109,14 +112,15 @@ public:
 };
 
 
-template <class T, class K>
-void merge(typename AVLTree<T, K>::Node* arrayTree1[], int na, typename AVLTree<T, K>::Node* arrayTree2[], int nb, typename AVLTree<T, K>::Node* newArrayTree[]);
+// template <class T, class K>
+// void merge(typename AVLTree<T, K>::Node* arrayTree1[], int na, typename AVLTree<T, K>::Node* arrayTree2[], 
+//                                                       int nb, typename AVLTree<T, K>::Node* newArrayTree[]);
 
-template <class T, class K>
-void unite_trees(AVLTree<T, K>& tree1, AVLTree<T, K>& tree2, AVLTree<T, K>& newTree);
+// template <class T, class K>
+// void unite_trees(AVLTree<T, K>& tree1, AVLTree<T, K>& tree2, AVLTree<T, K>& newTree);
 
-template <class T, class K>
-typename AVLTree<T, K>::Node* array_to_tree(T** arrayTree, int start, int end);
+// template <class T, class K>
+// typename AVLTree<T, K>::Node* array_to_tree(typename AVLTree<T, K>::Node** arrayTree, int start, int end);
 
 
 //-------------------- Node Implemantation --------------------
@@ -135,25 +139,27 @@ T* AVLTree<T, K>::search(const K& key) const{
 }
 
 template <class T, class K>
-void unite_trees(AVLTree<T, K>& tree1, AVLTree<T, K>& tree2, AVLTree<T, K>& newTree)
+void AVLTree<T, K>::unite_trees(AVLTree<T, K>& tree1, AVLTree<T, K>& tree2, AVLTree<T, K>& newTree)
 {
     int tree1Size = tree1.get_size();
     int tree2Size = tree2.get_size();
 
-    typename AVLTree<T, K>::Node** arrayTree1 = new typename AVLTree<T, K>::Node*[tree1Size];
-    tree1.in_order(arrayTree1);
-    typename AVLTree<T, K>::Node** arrayTree2 = new typename AVLTree<T, K>::Node*[tree2Size];
-    tree2.in_order(arrayTree2);
+
+    typename AVLTree<T, K>::Node** arrayOfTree1 = new typename AVLTree<T, K>::Node*[tree1Size];
+    tree1.in_order(arrayOfTree1);
+    typename AVLTree<T, K>::Node** arrayOfTree2 = new typename AVLTree<T, K>::Node*[tree2Size];
+    tree2.in_order(arrayOfTree2);
     typename AVLTree<T, K>::Node** newArrayTree = new typename AVLTree<T, K>::Node*[tree1Size + tree2Size];
-    merge(arrayTree1, tree1Size, arrayTree2,  tree2Size, newArrayTree);
+    merge(arrayOfTree1, tree1Size, arrayOfTree2,  tree2Size, newArrayTree);
     newTree.root = array_to_tree(newArrayTree, 0, tree1Size + tree2Size - 1);
+    assert(newTree.root != nullptr);
     newTree.fix_tree_height();
 
 }
 
 template <class T, class K>
-void merge(typename AVLTree<T, K>::Node* arrayTree1[], int na, typename AVLTree<T, K>::Node* arrayTree2[],
-                                                     int nb, typename AVLTree<T, K>::Node* newArrayTree[])
+void AVLTree<T, K>::merge(typename AVLTree<T, K>::Node* arrayTree1[], int na, typename AVLTree<T, K>::Node* arrayTree2[], 
+                                                      int nb, typename AVLTree<T, K>::Node* newArrayTree[])
 {
     int ia, ib, ic;
     try{
@@ -176,15 +182,15 @@ void merge(typename AVLTree<T, K>::Node* arrayTree1[], int na, typename AVLTree<
 
 
 template <class T, class K>
-typename AVLTree<T, K>::Node* array_to_tree(typename AVLTree<T, K>::Node* arrayTree[], int start, int end)
+typename AVLTree<T, K>::Node* AVLTree<T, K>::array_to_tree(typename AVLTree<T, K>::Node** arrayTree, int start, int end)
 {
     if(start > end){
         return nullptr;
     }
     int mid = (start + end) / 2;
-    typename AVLTree<T, K>::Node* newNode = new typename AVLTree<T, K>::Node;
-    newNode->m_data = arrayTree[mid]->m_data;
-    newNode->m_key = arrayTree[mid]->m_key;
+    assert(arrayTree[mid] != nullptr);
+    typename AVLTree<T, K>::Node* newNode (new typename AVLTree<T, K>::Node(arrayTree[mid]->m_data, arrayTree[mid]->m_key ));
+    std::cout << "insert " << *(newNode->m_data) << std::endl;
 
     newNode->m_left = array_to_tree(arrayTree, start, mid - 1);
     newNode->m_left->m_parent = newNode;
@@ -385,6 +391,7 @@ void AVLTree<T, K>::remove(const K& key)
 {
     Node* nodeToRemove = search_node(key);
     Node* currentNode = remove_node(nodeToRemove); 
+    assert(currentNode != nullptr);
     Node* parent = currentNode->m_parent;
     do{
         int parentHeight = currentNode->m_parent? currentNode->m_parent->m_height: 0;
