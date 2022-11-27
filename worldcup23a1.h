@@ -23,19 +23,6 @@
 #include <assert.h>
 class world_cup_t {
 private:
-	class PlayerKey{
-	public:
-		int operator()(Player player) const{
-			return player.get_id();
-		}
-	};
-
-	class TeamKey{
-	public:
-		int operator()(Team Team) const{
-			return Team.get_id();
-		}
-	};
 
 	AVLTree<Player, int> allPlayersId;
 	AVLTree<Player, Player> allPlayersGoals;

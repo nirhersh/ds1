@@ -3,10 +3,11 @@
 #include "Team.h"
 #include "AVLTree.h"
 
-Player::Player(int playerId, int teamId, bool goalKeeper,  int gamesPlayed, int goals, int cards): m_goalKeeper(goalKeeper){
-    if(playerId < 0 || teamId < 0 || gamesPlayed < 0 || goals < 0 || cards < 0){
+Player::Player(int playerId, Team* team, bool goalKeeper,  int gamesPlayed, int goals, int cards): m_goalKeeper(goalKeeper){
+    if(playerId < 0 || team->get_id() < 0 || gamesPlayed < 0 || goals < 0 || cards < 0){
         throw StatusType::INVALID_INPUT;
     }
+    m_team = team;
     m_playerId = playerId;
     m_team = nullptr;
     m_goals = goals;
@@ -18,7 +19,6 @@ int Player::get_id(){
 }
 
 int Player::get_team_id(){
-    assert(m_team != nullptr);
     return m_team->get_id();
 }
 
@@ -74,5 +74,5 @@ bool operator<(const Player& first, const Player& second)
 
 bool operator==(const Player& first, const Player& second)
 {
-    return first.m_playerId == second.m_playerId;
+    return first.m_goals == second.m_goals && first.m_playerId == second.m_playerId && first.m_cards == second.m_cards;
 }

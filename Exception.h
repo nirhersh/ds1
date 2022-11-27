@@ -32,4 +32,11 @@ public:
     }
 };
 
+class EmptyTree : public std::exception{
+public:
+    const char* what() const noexcept override{
+        return "Empty Tree: the tree is empty";
+    }
+};
+
 #endif //EXCEPTION_H

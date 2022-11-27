@@ -3,14 +3,14 @@
 
 #include "Team.h"
 
-Team::Team(int teamId, int points, int goals, int cards, int topScorerId, int totalPlayers, int gamesPlayed): 
-            m_totalGoals(goals), m_cards(cards), m_topScorerId(topScorerId),
-            m_totalPlayers(totalPlayers), m_gamesPlayed(gamesPlayed) {
+Team::Team(int teamId, int points, int goals, int cards, int gamesPlayed, bool hasGoalkeeper): 
+            m_totalGoals(goals), m_cards(cards), m_gamesPlayed(gamesPlayed), m_hasGoalkeeper(hasGoalkeeper) {
     if(teamId <= 0 || points < 0){
         throw   StatusType::INVALID_INPUT;
     }
     m_teamId = teamId;
     m_points = points;
+    m_goalkeeperCounter = 0;
 }
 
 int Team::get_id(){
@@ -30,15 +30,19 @@ int Team::get_team_cards(){
 }
 
 int Team::get_top_scorer_id(){
-    return m_topScorerId;
+    return m_topScorer->get_id();
 }
 
 int Team::get_total_players(){
-    return m_totalPlayers;
+    return playersById.get_size();
 }
 
 int Team::get_games_played(){
     return m_gamesPlayed;
+}
+
+int Team::get_team_score(){
+    return m_points+m_totalGoals-m_cards;
 }
 
 void Team::add_points(int points){
@@ -57,12 +61,32 @@ void Team::add_cards(int cards){
     m_cards += cards;
 }
 
-void Team::set_top_scorer_id(int playerId){
-    m_topScorerId = playerId;
+void Team::add_player(Player* newPlayer){
+    m_cards += newPlayer->get_cards();
+    m_totalGoals += newPlayer->get_goals();
+    if(newPlayer->is_goalkeeper()){
+        m_goalkeeperCounter++;
+    }
+    m_hasGoalkeeper = m_goalkeeperCounter > 0 ? true : false;
+    if((*newPlayer) > (*m_topScorer)){
+        m_topScorer = newPlayer;
+    }
+    playersById.push(newPlayer, (*newPlayer).get_id());
+    PlayersByGoals.push(newPlayer, *newPlayer);
 }
 
-void Team::add_players(int num){
-    m_totalPlayers += num;
+void Team::remove_player(Player player){
+    if(*m_topScorer == player){
+        m_topScorer = PlayersByGoals.get_preceding_value(player);
+    }
+    playersById.remove(player.get_id());
+    PlayersByGoals.remove(player);
+    m_cards -= player.get_cards();
+    m_totalGoals -= player.get_goals();
+    if(player.is_goalkeeper()){
+        m_goalkeeperCounter--;
+        m_hasGoalkeeper = m_goalkeeperCounter > 0 ? true : false;
+    }
 }
 
 #endif

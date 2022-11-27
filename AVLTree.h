@@ -9,13 +9,6 @@
 #include <stdbool.h>
 #include <iostream>
 
-template<class T>
-class R_Node{
-public:
-    R_Node* next;
-    T* data;
-};
-
 template <class T, class K>
 class AVLTree{
 public:
@@ -48,17 +41,13 @@ public:
     @param item: the item to push into the tree
     @return: a pointer to the data
     */
-    void push(T* item, K& key);
+    void push(T* item, const K& key);
     
     /*
     A function that removes for a value from the tree
     @param key: The key of the removed data
     */
     void remove(const K& key);
-
-    Node* getRoot(){
-        return root;
-    }
 
     int get_size()const;
 
@@ -75,6 +64,12 @@ public:
     static void unite_trees(AVLTree<T, K>& tree1, AVLTree<T, K>& tree2, AVLTree<T, K>& newTree);
 
 
+    T* get_following_value(const K& key) const;
+
+    T* get_preceding_value(const K& key) const;
+
+    bool is_empty()const;
+
 private:
     Node* root;
     int m_size;
@@ -83,9 +78,10 @@ private:
     Node* search_node(const K& key) const;
     Node* remove_node(Node* nodeToRemove);
     Node* get_following_node(Node* node)const;
+    Node* get_preceding_node(Node* node)const;
     void switch_nodes(Node* node1,Node* node2);
-    int in_order_recurtion(T** array, Node* current, int index = 0) const;
-    int in_order_recurtion(Node* array[], Node* current, int index = 0) const;
+    int in_order_recursion(T** array, Node* current, int index = 0) const;
+    int in_order_recursion(Node* array[], Node* current, int index = 0) const;
     static void merge(Node* arrayTree1[], int na, Node* arrayTree2[], int nb, Node* newArrayTree[]);
     static Node* array_to_tree(Node** arrayTree, int start, int end);
     int calc_BF(Node* node);
@@ -100,7 +96,7 @@ class AVLTree<T, K>::Node{
 public:
     Node(const Node&) = delete;
     Node& operator=(const Node& other) = delete;
-//private:
+private:
     T* m_data;
     K m_key;
     int m_height; 
@@ -111,6 +107,10 @@ public:
     friend class AVLTree<T, K>;
 };
 
+template <class T, class K>
+bool AVLTree<T, K>::is_empty()const{
+    return m_size == 0 ? true : false;
+}
 
 // template <class T, class K>
 // void merge(typename AVLTree<T, K>::Node* arrayTree1[], int na, typename AVLTree<T, K>::Node* arrayTree2[], 
@@ -236,7 +236,7 @@ void AVLTree<T, K>::fix_tree_height(Node* node)
 }
 
 template <class T, class K>
-void AVLTree<T, K>::push(T* item, K& key){
+void AVLTree<T, K>::push(T* item, const K& key){
     assert(item != nullptr);
     bool found = false;
     Node* currentNode = root;
@@ -512,14 +512,26 @@ void AVLTree<T, K>::switch_nodes(Node* node1, Node* node2){
 template<class T, class K> 
 typename AVLTree<T, K>::Node* AVLTree<T, K>::get_following_node(Node* node) const //if there is no right son return the parent
 {
-    assert(node != nullptr);
-    assert(node->m_right != nullptr);
-    node = node->m_right;
-    while(node->m_left)
-    {
-        node = node->m_left;
+    if(node == nullptr){
+        throw KeyDoesntExists();
     }
-    return node;
+    Node* tempNode = root;
+    Node* closest = nullptr;
+    while(tempNode){
+        if(tempNode->m_key < node->m_key){
+            tempNode->m_right;
+        }else{
+            if(closest == nullptr){
+                closest = tempNode;
+            }else{
+                if(!(closest->m_key < tempNode->m_key)){
+                    closest = tempNode;
+                }
+                tempNode->m_left;
+            }
+        }
+    }
+    return closest;
 }
 
 
@@ -530,42 +542,42 @@ int AVLTree<T, K>::get_size()const{
 
 template<class T, class K>
 void AVLTree<T ,K>::in_order(T** array) const{
-    in_order_recurtion(array, root, 0);
+    in_order_recursion(array, root, 0);
     }
 
 template<class T, class K>
 void AVLTree<T ,K>::in_order(Node* array[]) const{
-    in_order_recurtion(array, root, 0);
+    in_order_recursion(array, root, 0);
     }
 
 template<class T, class K>
-int AVLTree<T, K>::in_order_recurtion(T** array, Node* current, int index) const
+int AVLTree<T, K>::in_order_recursion(T** array, Node* current, int index) const
 {
     if(current == nullptr){
         return index;
     }
     //std::cout << "entered " << *(current->m_data) << std::endl;
-    index = in_order_recurtion(array, current->m_left, index);
+    index = in_order_recursion(array, current->m_left, index);
     if(index >= m_size){
         return index;
     }
     array[index++] = current->m_data;
-    return in_order_recurtion(array, current->m_right, index);
+    return in_order_recursion(array, current->m_right, index);
 }
 
 template<class T, class K>
-int AVLTree<T, K>::in_order_recurtion(Node* array[], Node* current, int index) const
+int AVLTree<T, K>::in_order_recursion(Node* array[], Node* current, int index) const
 {
     if(current == nullptr){
         return index;
     }
     //std::cout << "entered " << *(current->m_data) << std::endl;
-    index = in_order_recurtion(array, current->m_left, index);
+    index = in_order_recursion(array, current->m_left, index);
     if(index >= m_size){
         return index;
     }
     array[index++] = current;
-    return in_order_recurtion(array, current->m_right, index);
+    return in_order_recursion(array, current->m_right, index);
 }
 
 template<class T, class K>
@@ -579,6 +591,48 @@ bool AVLTree<T, K>::exists(const K& key) const
     return true;
 }
 
+template<class T, class K>
+T* AVLTree<T, K>::get_following_value(const K& key) const{
+    if(is_empty()){
+        throw EmptyTree();
+    }
+    Node* nodeToReturn = get_following_node(search_node(key));
+    return nodeToReturn->m_data;
+}
+
+template<class T, class K>
+T* AVLTree<T, K>::get_preceding_value(const K& key) const{
+    if(is_empty()){
+        throw EmptyTree();
+    }
+    Node* nodeToReturn = get_preceding_node(search_node(key));
+    return nodeToReturn->m_data;
+}
+
+template<class T, class K> 
+typename AVLTree<T, K>::Node* AVLTree<T, K>::get_preceding_node(Node* node) const
+{
+    if(node == nullptr){
+        throw KeyDoesntExists();
+    }
+    Node* tempNode = root;
+    Node* closest = nullptr;
+    while(tempNode){
+        if(!(tempNode->m_key < node->m_key)){
+            tempNode->m_left;
+        }else{
+            if(closest == nullptr){
+                closest = tempNode;
+            }else{
+                if(closest->m_key < tempNode->m_key){
+                    closest = tempNode;
+                }
+                tempNode->m_left;
+            }
+        }
+    }
+    return closest;
+}
 #endif
 
 

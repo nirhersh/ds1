@@ -1,9 +1,9 @@
 #include "worldcup23a1.h"
 
-world_cup_t::world_cup_t()
-{
-	// TODO: Your code goes here
-}
+// world_cup_t::world_cup_t()
+// {
+// 	// TODO: Your code goes here
+// }
 
 world_cup_t::~world_cup_t()
 {
@@ -16,17 +16,13 @@ StatusType world_cup_t::add_team(int teamId, int points)
 	if(teamId <= 0 || points < 0){
 		return StatusType::INVALID_INPUT;
 	}
-	Team* newTeam;
 	try{
-	newTeam = new Team(teamId, points);
+		Team* newTeam(new Team(teamId, points));
+		teams.push(newTeam, teamId);
 	} catch(std::bad_alloc& exc) {
-		assert(1);
 		return StatusType::ALLOCATION_ERROR;
 	}
-	try{
-		teams.push(newTeam, teamId);
-	} catch(KeyAlreadyExists& exc) {
-		assert(1);
+	catch(KeyAlreadyExists& e) {
 		return StatusType::FAILURE;
 	}
 	return StatusType::SUCCESS;

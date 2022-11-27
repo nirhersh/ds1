@@ -5,15 +5,18 @@
 #define PLAYER_H
 
 #include <stdbool.h>
+#include "Team.h"
 #include "wet1util.h"
 #include "Team.h"
+#include <memory>
+class Team;
 
 class Player{
 public:
     /*
     Player c'tor
     */
-    Player(int playerId, int teamId, bool goalKeeper = false,  int gamesPlayed = 0, int goals = 0, int cards = 0);
+    Player(int playerId, Team* team, bool goalKeeper = false,  int gamesPlayed = 0, int goals = 0, int cards = 0);
 
     /*
     Player d'tor
@@ -68,9 +71,8 @@ public:
     void add_cards(int cards);
 
 private:
+    Team* m_team;
     int m_playerId;
-    int teamId;
-    //Team* m_team;
     int m_gamesPlayed;
     int m_goals;
     int m_cards;
