@@ -61,10 +61,13 @@ public:
 
     bool exists(const K& key) const;
 
+    Node* getRoot() const;
+
     static void fix_tree_height(Node*);
+
+    bool check_balance_factor(Node* node);
  
     static void unite_trees(AVLTree<T, K>& tree1, AVLTree<T, K>& tree2, AVLTree<T, K>& newTree);
-
 
     T* get_following_value(const K& key) const;
 
@@ -101,6 +104,7 @@ class AVLTree<T, K>::Node{
 public:
     Node(const Node&) = delete;
     Node& operator=(const Node& other) = delete;
+    K get_key();
 private:
     T* m_data;
     K m_key;
@@ -132,6 +136,12 @@ bool AVLTree<T, K>::is_empty()const{
 template <class T, class K>
 AVLTree<T, K>::Node::Node(T* data, const K& key) : m_data(data), m_key(key), m_height(0),
                          m_right(nullptr), m_left(nullptr), m_parent(nullptr){}
+
+template <class T, class K>
+K AVLTree<T, K>::Node::get_key()
+{
+    return m_key;
+}
 
 //-------------------- AVLTree Implemantation --------------------
 template <class T, class K>
@@ -241,6 +251,21 @@ void AVLTree<T, K>::fix_tree_height(Node* node)
 }
 
 template <class T, class K>
+bool AVLTree<T, K>::check_balance_factor(Node* node)
+{
+    if(!node)
+    {
+        return true;
+    }
+    int balanceFactor = calc_BF(node);
+    bool valid = ((balanceFactor >= -1) && (balanceFactor <= 1)) ? true: false;
+    if(!valid){
+        return false;
+    }
+    return ((check_balance_factor(node->m_left) && check_balance_factor(node->m_right)))? true : false;
+}
+
+template <class T, class K>
 void AVLTree<T, K>::push(T* item, const K& key){
     assert(item != nullptr);
     bool found = false;
@@ -343,7 +368,12 @@ void AVLTree<T, K>::LL_fix(Node* parent){
     if(B == root){
         root = A;
     }
+
+    
+    fix_height(AR);
     fix_height(B);
+    fix_height(A);
+    //fix_tree_height(root);
 }
 
 template<class T, class K>
@@ -385,7 +415,11 @@ void AVLTree<T, K>::RR_fix(Node* parent)
             A->m_parent->m_right = A;
         }
     }
+    
+    fix_height(AL);
     fix_height(B);
+    fix_height(A);
+    //fix_tree_height(root);
 }
 
 template<class T, class K>
@@ -402,6 +436,9 @@ int AVLTree<T, K>::calc_BF(Node* node)
 template<class T, class K>
 void AVLTree<T, K>::fix_height(Node* node1)
 {
+    if(!node1){
+        return;
+    }
     int leftTreeH = node1->m_left == nullptr ? -1 : node1->m_left->m_height;
     int rightTreeH = node1->m_right == nullptr ? -1 : node1->m_right->m_height;
     node1->m_height = leftTreeH > rightTreeH ? 1 + leftTreeH : 1 + rightTreeH;
@@ -412,7 +449,6 @@ void AVLTree<T, K>::remove(const K& key)
 {
     Node* nodeToRemove = search_node(key);
     Node* currentNode = remove_node(nodeToRemove); 
-    assert(currentNode != nullptr);
     Node* parent = currentNode->m_parent;
     do{
         int parentHeight = currentNode->m_parent? currentNode->m_parent->m_height: 0;
@@ -455,7 +491,7 @@ template<class T, class K>
 typename AVLTree<T, K>::Node* AVLTree<T, K>::remove_node(Node* nodeToRemove){
     bool isRight = false;
     if(nodeToRemove->m_parent != nullptr && nodeToRemove->m_parent->m_right == nodeToRemove){
-            isRight = true;;
+            isRight = true;
     }
     Node* nodeToReturn;
     if (nodeToRemove->m_right == nullptr && nodeToRemove->m_left == nullptr)
@@ -494,7 +530,7 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::remove_node(Node* nodeToRemove){
     else{
         Node* followingNode = get_following_node(nodeToRemove);
         switch_nodes(nodeToRemove, followingNode);
-        remove_node(followingNode);    
+        nodeToReturn = remove_node(followingNode);    
     }
     return nodeToReturn;
 }
@@ -520,21 +556,25 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::get_following_node(Node* node) cons
     if(node == nullptr){
         throw KeyDoesntExists();
     }
-    Node* tempNode = root;
+    Node* tempNode = node;
     Node* closest = nullptr;
-    while(tempNode){
-        if(tempNode->m_key < node->m_key){
-            tempNode->m_right;
-        }else{
-            if(closest == nullptr){
-                closest = tempNode;
-            }else{
-                if(!(closest->m_key < tempNode->m_key)){
-                    closest = tempNode;
-                }
-                tempNode->m_left;
+    if(node->m_right){
+        tempNode = node->m_right;
+        while(tempNode->m_left){
+            tempNode = tempNode->m_left;
+        }
+        closest = tempNode;
+    }else{
+        if(!tempNode->m_parent){
+            return nullptr;
+        }
+        while(tempNode->m_parent->m_left != tempNode){
+            tempNode = tempNode->m_left;
+            if(!tempNode->m_parent){
+                return nullptr;
             }
         }
+        closest = tempNode;
     }
     return closest;
 }
@@ -561,7 +601,7 @@ int AVLTree<T, K>::in_order_recursion(T** array, Node* current, int index) const
     if(current == nullptr){
         return index;
     }
-    //std::cout << "entered " << *(current->m_data) << std::endl;
+
     index = in_order_recursion(array, current->m_left, index);
     if(index >= m_size){
         return index;
@@ -576,7 +616,6 @@ int AVLTree<T, K>::in_order_recursion(Node* array[], Node* current, int index) c
     if(current == nullptr){
         return index;
     }
-    //std::cout << "entered " << *(current->m_data) << std::endl;
     index = in_order_recursion(array, current->m_left, index);
     if(index >= m_size){
         return index;
@@ -661,6 +700,12 @@ int AVLTree<T, K>::get_height() const
 {
     fix_tree_height(root);
     return root->m_height;
+}
+
+template<class T, class K> 
+typename AVLTree<T, K>::Node* AVLTree<T, K>::getRoot() const
+{
+    return root;
 }
 
 
