@@ -9,6 +9,8 @@
 #include "wet1util.h"
 #include "Team.h"
 #include <memory>
+#include "Exception.h"
+#include <cstdlib>
 class Team;
 
 class Player{
@@ -55,6 +57,14 @@ public:
 
     bool is_goalkeeper();
 
+    Player* get_close_to_left();
+    
+    Player* get_close_to_right();
+
+    Player* get_close_to_me();
+
+    Player* closest(Player* player1, Player* player2);
+
     /*
     adds one game to the games played count of the player
     */
@@ -70,8 +80,17 @@ public:
     */
     void add_cards(int cards);
 
+    void update_close_to_left(Player* player);
+
+    void update_close_to_right(Player* player);
+
+    void update_close_to_me(Player* player);
+
 private:
     Team* m_team;
+    Player* m_closeToRight;
+    Player* m_closeToLeft;
+    Player* m_closeToMe;
     int m_playerId;
     int m_gamesPlayed;
     int m_goals;

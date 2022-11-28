@@ -39,4 +39,11 @@ public:
     }
 };
 
+class InvalidArguments : public std::exception{
+public:
+    const char* what() const noexcept override{
+        return "Invalid Arguments: invalid arguments for player or a team";
+    }
+};
+
 #endif //EXCEPTION_H

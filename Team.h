@@ -24,6 +24,7 @@ public:
     int get_id();
     int get_games_played();
     int get_team_score();
+    bool is_qulified();
     /*
         setters:
     */

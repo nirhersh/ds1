@@ -1,11 +1,8 @@
 #include "Player.h"
-#include "wet1util.h"
-#include "Team.h"
-#include "AVLTree.h"
 
 Player::Player(int playerId, Team* team, bool goalKeeper,  int gamesPlayed, int goals, int cards): m_goalKeeper(goalKeeper){
     if(playerId < 0 || team->get_id() < 0 || gamesPlayed < 0 || goals < 0 || cards < 0){
-        throw StatusType::INVALID_INPUT;
+        throw InvalidArguments();
     }
     m_team = team;
     m_playerId = playerId;
@@ -23,7 +20,7 @@ int Player::get_team_id(){
 }
 
 int Player::get_games_played(){
-    return m_gamesPlayed;
+    return m_gamesPlayed + m_team->get_games_played();
 }
 
 int Player::get_goals(){
@@ -36,6 +33,52 @@ int Player::get_cards(){
 
 bool Player::is_goalkeeper(){
     return m_goalKeeper;
+}
+
+Player* Player::get_close_to_right(){
+    return m_closeToRight;
+}
+
+Player* Player::get_close_to_left(){
+    return m_closeToLeft;
+}
+
+Player* Player::get_close_to_me(){
+    return m_closeToMe;
+}
+
+void Player::update_close_to_left(Player* player){
+    m_closeToLeft = player;
+}
+
+void Player::update_close_to_right(Player* player){
+    m_closeToRight = player;
+}
+
+void Player::update_close_to_me(Player* player){
+    m_closeToMe = player;
+}
+
+Player* Player::closest(Player* player1, Player* player2){
+    if(std::abs(player1->get_goals() - m_goals) > std::abs(player2->get_goals() - m_goals)){
+        return player2;
+    }else if(std::abs(player1->get_goals() - m_goals) < std::abs(player2->get_goals() - m_goals)){
+        return player1;
+    }else{
+        if(std::abs(player1->get_cards() - m_cards) > std::abs(player2->get_cards() - m_cards)){
+            return player2;
+        }else if(std::abs(player1->get_cards() - m_cards) < std::abs(player2->get_cards() - m_cards)){
+            return player1;
+        }else{
+            if(std::abs(player1->get_id() - m_playerId) > std::abs(player2->get_id() - m_playerId)){
+                return player2;
+            }else if(std::abs(player1->get_id() - m_playerId) < std::abs(player2->get_id() - m_playerId)){
+                return player1;
+            }else{
+                return player1->get_id() > player2->get_id() ? player1 : player2;
+            }   
+        }
+    }
 }
 
 void Player::add_games(int games){

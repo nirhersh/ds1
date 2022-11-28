@@ -6,7 +6,7 @@
 Team::Team(int teamId, int points, int goals, int cards, int gamesPlayed, bool hasGoalkeeper): 
             m_totalGoals(goals), m_cards(cards), m_gamesPlayed(gamesPlayed), m_hasGoalkeeper(hasGoalkeeper) {
     if(teamId <= 0 || points < 0){
-        throw   StatusType::INVALID_INPUT;
+        throw InvalidArguments();
     }
     m_teamId = teamId;
     m_points = points;
@@ -43,6 +43,14 @@ int Team::get_games_played(){
 
 int Team::get_team_score(){
     return m_points+m_totalGoals-m_cards;
+}
+
+bool Team::is_qulified(){
+    if(m_hasGoalkeeper && playersById.get_size() >= 11){
+        return true;
+    }else{
+        return false;
+    }
 }
 
 void Team::add_points(int points){

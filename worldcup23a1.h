@@ -24,11 +24,11 @@
 class world_cup_t {
 private:
 
-	AVLTree<Player, int> allPlayersId;
-	AVLTree<Player, Player> allPlayersGoals;
-	AVLTree<Team, int> teams;
-	AVLTree<Team, int> qualifiedTeams;
-	Player* bestPlayer;
+	AVLTree<Player, int> m_allPlayersId;
+	AVLTree<Player, Player> m_allPlayersGoals;
+	AVLTree<Team, int> m_teams;
+	AVLTree<Team, int> m_qualifiedTeams;
+	Player* m_bestPlayer;
 	
 public:
 	// <DO-NOT-MODIFY> {
