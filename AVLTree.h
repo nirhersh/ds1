@@ -17,7 +17,7 @@ public:
     */
     AVLTree();
 
-    ~AVLTree() = default;
+    ~AVLTree();
 
     AVLTree(const AVLTree<T, K>& other) = delete;
     
@@ -51,6 +51,8 @@ public:
 
     int get_size()const;
 
+    int get_height()const;
+
     void in_order(T** array) const;
 
     void in_order(Node* array[]) const;
@@ -70,9 +72,11 @@ public:
 
     bool is_empty()const;
 
+
 private:
     Node* root;
     int m_size;
+    void recurtion_dtor(Node* node);
     static void fix_height(Node* node1);
     void balance_tree(Node* newNode);
     Node* search_node(const K& key) const;
@@ -89,6 +93,7 @@ private:
     void RL_fix(Node* node);
     void LR_fix(Node* node);
     void RR_fix(Node* node);
+    
 };
 
 template <class T, class K>
@@ -633,6 +638,32 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::get_preceding_node(Node* node) cons
     }
     return closest;
 }
+
+template<class T, class K> 
+AVLTree<T, K>::~AVLTree()
+{
+    recurtion_dtor(root);
+}
+
+template<class T, class K> 
+void AVLTree<T, K>::recurtion_dtor(Node* node)
+{
+    if(!node){
+        return;
+    }
+    recurtion_dtor(node->m_left);
+    recurtion_dtor(node->m_right);
+    delete node;
+}
+
+template<class T, class K> 
+int AVLTree<T, K>::get_height() const
+{
+    fix_tree_height(root);
+    return root->m_height;
+}
+
+
 #endif
 
 
