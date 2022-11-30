@@ -40,12 +40,12 @@ StatusType world_cup_t::add_team(int teamId, int points)
 
 StatusType world_cup_t::remove_team(int teamId)
 {
-	if(teamId < 0){
+	if(teamId <= 0){
 		return StatusType::INVALID_INPUT;
 	}
 	try{
 		Team* teamToRemove = m_teams.search(teamId);
-		if(teamToRemove->get_total_players() == 0){
+		if(teamToRemove->get_total_players() != 0){
 			return StatusType::FAILURE;
 		}else{
 			m_teams.remove(teamId);
@@ -61,6 +61,9 @@ StatusType world_cup_t::remove_team(int teamId)
 StatusType world_cup_t::add_player(int playerId, int teamId, int gamesPlayed,
                                    int goals, int cards, bool goalKeeper)
 {
+	if(teamId <= 0){
+		return StatusType::INVALID_INPUT;
+	}
 	try{
 		Team* playersTeam = m_teams.search(teamId);
 		Player* newPlayer(new Player(playerId, playersTeam, goalKeeper, gamesPlayed, goals, cards));
@@ -76,31 +79,30 @@ StatusType world_cup_t::add_player(int playerId, int teamId, int gamesPlayed,
 		//update close to and close to me
 		Player* closeToNewPlayerLeft = m_allPlayersGoals.get_preceding_value(*newPlayer);
 		Player* closeToNewPlayerRight = m_allPlayersGoals.get_following_value(*newPlayer);
-		if(closeToNewPlayerLeft->closest(newPlayer, closeToNewPlayerLeft->get_close_to_me()) == newPlayer){
-			closeToNewPlayerLeft->update_close_to_me(newPlayer);
-			newPlayer->update_close_to_left(closeToNewPlayerLeft);
+		
+		if(closeToNewPlayerLeft != nullptr){
+			closeToNewPlayerLeft->update_right(newPlayer);
 		}
-		if(closeToNewPlayerRight->closest(newPlayer, closeToNewPlayerRight->get_close_to_me()) == newPlayer){
-			closeToNewPlayerRight->update_close_to_me(newPlayer);
-			newPlayer->update_close_to_right(closeToNewPlayerRight);
+		newPlayer->update_left(closeToNewPlayerLeft);
+		if(closeToNewPlayerRight != nullptr){
+			closeToNewPlayerRight->update_left(newPlayer);
 		}
-		newPlayer->update_close_to_me(newPlayer->closest(closeToNewPlayerLeft, closeToNewPlayerRight));
+		newPlayer->update_left(closeToNewPlayerRight);
 	}catch(std::bad_alloc& e){
 		return StatusType::ALLOCATION_ERROR;
 	}catch(InvalidArguments& e){
 		return StatusType::INVALID_INPUT;
 	}catch(KeyAlreadyExists& e){
 		return StatusType::FAILURE;
+	}catch(KeyDoesntExists& e){
+		return StatusType::FAILURE;
 	}
-
-
-
 	return StatusType::SUCCESS;
 }
 
 StatusType world_cup_t::remove_player(int playerId)
 {
-	if(playerId<0){
+	if(playerId<=0){
 		return StatusType::INVALID_INPUT;
 	}
 	try{
@@ -110,16 +112,14 @@ StatusType world_cup_t::remove_player(int playerId)
 			m_bestPlayer = playerToRemove->get_close_to_me();
 		}
 		//update close player left
-		Player* closePlayerLeft = playerToRemove->get_close_to_left();
-		if(closePlayerLeft != nullptr){
-			closePlayerLeft->update_close_to_me(closePlayerLeft->closest(m_allPlayersGoals.get_preceding_value(*closePlayerLeft), 
-			m_allPlayersGoals.get_following_value(*closePlayerLeft)));
+		Player* closePlayerLeft = playerToRemove->get_left();
+		if(closePlayerLeft){
+			closePlayerLeft->update_right(playerToRemove->get_right());
 		}
 		//update close player right
-		Player* closePlayerRight = playerToRemove->get_close_to_right();
-		if(closePlayerRight != nullptr){
-			closePlayerRight->update_close_to_me(closePlayerRight->closest(m_allPlayersGoals.get_preceding_value(*closePlayerRight), 
-			m_allPlayersGoals.get_following_value(*closePlayerRight)));
+		Player* closePlayerRight = playerToRemove->get_right();
+		if(closePlayerRight){
+			closePlayerRight->update_left(playerToRemove->get_left());
 		}
 		//remove from team and world cup trees
 		int teamId = playerToRemove->get_team_id();
@@ -156,7 +156,9 @@ StatusType world_cup_t::update_player_stats(int playerId, int gamesPlayed,
 		//update the player in the team trees
 		Team* team = m_teams.search(player->get_team_id());
 		team->remove_player(*player);
-		team->add_player(player);
+		team->add_player(player);	
+		//update the player in the players tree
+
 
 	}catch(KeyDoesntExists& e){
 		return StatusType::FAILURE;

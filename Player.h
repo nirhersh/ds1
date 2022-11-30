@@ -57,9 +57,9 @@ public:
 
     bool is_goalkeeper();
 
-    Player* get_close_to_left();
+    Player* get_left();
     
-    Player* get_close_to_right();
+    Player* get_right();
 
     Player* get_close_to_me();
 
@@ -80,17 +80,14 @@ public:
     */
     void add_cards(int cards);
 
-    void update_close_to_left(Player* player);
+    void update_left(Player* player);
 
-    void update_close_to_right(Player* player);
-
-    void update_close_to_me(Player* player);
+    void update_right(Player* player);
 
 private:
     Team* m_team;
-    Player* m_closeToRight;
-    Player* m_closeToLeft;
-    Player* m_closeToMe;
+    Player* m_right;
+    Player* m_left;
     int m_playerId;
     int m_gamesPlayed;
     int m_goals;

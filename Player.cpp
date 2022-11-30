@@ -1,12 +1,11 @@
 #include "Player.h"
 
 Player::Player(int playerId, Team* team, bool goalKeeper,  int gamesPlayed, int goals, int cards): m_goalKeeper(goalKeeper){
-    if(playerId < 0 || team->get_id() < 0 || gamesPlayed < 0 || goals < 0 || cards < 0){
+    if(playerId <= 0 || team->get_id() <= 0 || gamesPlayed < 0 || goals < 0 || cards < 0){
         throw InvalidArguments();
     }
     m_team = team;
     m_playerId = playerId;
-    m_team = nullptr;
     m_goals = goals;
     m_cards = cards;
 }
@@ -35,31 +34,33 @@ bool Player::is_goalkeeper(){
     return m_goalKeeper;
 }
 
-Player* Player::get_close_to_right(){
-    return m_closeToRight;
+Player* Player::get_right(){
+    return m_right;
 }
 
-Player* Player::get_close_to_left(){
-    return m_closeToLeft;
+Player* Player::get_left(){
+    return m_left;
 }
 
 Player* Player::get_close_to_me(){
-    return m_closeToMe;
+    return closest(m_left, m_right);
 }
 
-void Player::update_close_to_left(Player* player){
-    m_closeToLeft = player;
+void Player::update_left(Player* player){
+    m_left = player;
 }
 
-void Player::update_close_to_right(Player* player){
-    m_closeToRight = player;
-}
-
-void Player::update_close_to_me(Player* player){
-    m_closeToMe = player;
+void Player::update_right(Player* player){
+    m_right = player;
 }
 
 Player* Player::closest(Player* player1, Player* player2){
+    if(player1 == nullptr){
+        return player2;
+    }else if(player2 == nullptr){
+        return player1;
+    }
+    // return nullptr if both players are nullptr;
     if(std::abs(player1->get_goals() - m_goals) > std::abs(player2->get_goals() - m_goals)){
         return player2;
     }else if(std::abs(player1->get_goals() - m_goals) < std::abs(player2->get_goals() - m_goals)){

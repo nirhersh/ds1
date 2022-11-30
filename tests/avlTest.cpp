@@ -19,17 +19,17 @@ bool get_preceding_following_Test(int& removeSucceededTests);
 int main(){
     int searchSucceededTests, pushSucceededTests, removeSucceededTests, uniteSucceededTests;
 
-    // bool searchFunctionTest = searchTest(searchSucceededTests);
-    // std::cout << "search passed " << searchSucceededTests << "out of 2 tests" << std::endl;
+    bool searchFunctionTest = searchTest(searchSucceededTests);
+    std::cout << "search passed " << searchSucceededTests << "out of 2 tests" << std::endl;
 
-    //bool pushFunctionTest = pushTest(pushSucceededTests);
-    //std::cout << "push passed " << pushSucceededTests << "out of 7 tests" << std::endl;
+    bool pushFunctionTest = pushTest(pushSucceededTests);
+    std::cout << "push passed " << pushSucceededTests << "out of 7 tests" << std::endl;
 
-    // bool removeFunctionTest = removeTest(removeSucceededTests);
-    // std::cout << "remove passed " << removeSucceededTests << "out of 2 tests" << std::endl;
+    bool removeFunctionTest = removeTest(removeSucceededTests);
+    std::cout << "remove passed " << removeSucceededTests << "out of 2 tests" << std::endl;
 
-    // bool uniteTreesFunctionTest = unite_tree_Test(uniteSucceededTests);
-    // std::cout << "unite passed " << uniteSucceededTests << "out of 2 tests" << std::endl;
+    bool uniteTreesFunctionTest = unite_tree_Test(uniteSucceededTests);
+    std::cout << "unite passed " << uniteSucceededTests << "out of 2 tests" << std::endl;
 
     bool preFolTreesFunctionTest = get_preceding_following_Test(uniteSucceededTests);
     std::cout << "preceding folloeing passed " << uniteSucceededTests << "out of 2 tests" << std::endl;
@@ -258,7 +258,7 @@ bool get_preceding_following_Test(int& preFolSucceededTests)
     int c = 0;
     int d = 5;
     int e = 8;
-    int numOfInserst = 100000;
+    int numOfInserst = 500000;
     int seed = 9187231;
     int treeSize = 0;
     int newVal;
@@ -286,8 +286,24 @@ bool get_preceding_following_Test(int& preFolSucceededTests)
     assert(*value == e);
     preFolSucceededTests++;
     int* value2 = Tree2.get_following_value(c);
-    std::cout << "value of following is " << *(value2) << std::endl; 
     assert(*(value2) == secToLeft);
+    int MAXINT = 2147483646;
+    int rightestLeaf = 10;
+    int secToRight = 9;
+    Tree2.push(&c, MAXINT);
+    assert(Tree2.get_following_value(MAXINT) == nullptr);
+    preFolSucceededTests++;
+
+    assert(Tree2.get_preceding_value(c) == nullptr);
+    ////................................. test hatzi hamilion.................................//
+    AVLTree<int, int>::Node** array = new AVLTree<int, int>::Node*[Tree2.get_size()];
+    Tree2.in_order(array);
+    std::cout << array[0]->get_key();
+    for (int i = 0; i < Tree2.get_size() - 1; i++)
+    {
+        assert(Tree2.get_following_value(array[i]->get_key()) == array[i + 1]->get_data());
+        assert(Tree2.get_preceding_value(array[i + 1]->get_key()) == array[i]->get_data());
+    }
     return true;
 
-}
+}       

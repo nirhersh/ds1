@@ -49,10 +49,22 @@ public:
     */
     void remove(const K& key);
 
+    /*
+    A function that returns the amount of nodes in the tree
+    @return size of the tree
+    */
     int get_size()const;
 
+    /*
+    A function that returns the hieght of the tree
+    @return: the height of the tree
+    */
     int get_height()const;
 
+    /*
+    A function that returns
+    @param key: The key of the removed data
+    */
     void in_order(T** array) const;
 
     void in_order(Node* array[]) const;
@@ -105,6 +117,9 @@ public:
     Node(const Node&) = delete;
     Node& operator=(const Node& other) = delete;
     K get_key();
+    T* get_data(){
+        return m_data;
+    }
 private:
     T* m_data;
     K m_key;
@@ -543,9 +558,7 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::get_following_node(Node* node) cons
     Node* tempNode = node;
     Node* closest = nullptr;
     if(node->m_right){
-        std::cout<< "in func right " << *(node->m_data) << std::endl;
         tempNode = node->m_right;
-        std::cout<< "in func right" << *(tempNode->m_data) << std::endl;
         while(tempNode->m_left){
             tempNode = tempNode->m_left;
         }
@@ -554,17 +567,21 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::get_following_node(Node* node) cons
         if(!tempNode->m_parent){
             return nullptr;
         }
-        closest = tempNode->m_parent;
-        while(tempNode->m_parent->m_left != tempNode){
-            tempNode = tempNode->m_left;
-            if(!tempNode->m_parent){
-                return nullptr;
+        closest = nullptr;
+        while(tempNode != nullptr){
+            if(tempNode->get_key() > node->m_key)
+            {
+                if(closest == nullptr){
+                    closest = tempNode;
+                } else if(tempNode->get_key() < closest->get_key()){
+                    closest = tempNode;
+                }
+
             }
-            closest = tempNode;
+            tempNode = tempNode->m_parent;
         }
     }
-    std::cout<< "in func " << *(closest->m_data) << std::endl;
-    return closest;
+    return closest; //if most right leaf returns nullptr
 }
 
 
@@ -629,7 +646,11 @@ T* AVLTree<T, K>::get_following_value(const K& key) const{
         throw EmptyTree();
     }
     Node* nodeToReturn = get_following_node(search_node(key));
-    return nodeToReturn->m_data;
+    if(nodeToReturn == nullptr){
+        return nullptr;
+    }else{
+        return nodeToReturn->m_data;
+    }
 }
 
 template<class T, class K>
@@ -638,7 +659,11 @@ T* AVLTree<T, K>::get_preceding_value(const K& key) const{
         throw EmptyTree();
     }
     Node* nodeToReturn = get_preceding_node(search_node(key));
-    return nodeToReturn->m_data;
+    if(nodeToReturn == nullptr){
+        return nullptr;
+    }else{
+        return nodeToReturn->m_data;
+    }
 }
 
 template<class T, class K> 
@@ -647,23 +672,32 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::get_preceding_node(Node* node) cons
     if(node == nullptr){
         throw KeyDoesntExists();
     }
-    Node* tempNode = root;
+    Node* tempNode = node;
     Node* closest = nullptr;
-    while(tempNode){
-        if(!(tempNode->m_key < node->m_key)){
-            tempNode->m_left;
-        }else{
-            if(closest == nullptr){
-                closest = tempNode;
-            }else{
-                if(closest->m_key < tempNode->m_key){
+    if(node->m_left){
+        tempNode = node->m_left;
+        while(tempNode->m_right){
+            tempNode = tempNode->m_right;
+        }
+        closest = tempNode;
+    }else{
+        if(!tempNode->m_parent){
+            return nullptr;
+        }
+        closest = nullptr;
+        while(tempNode != nullptr){
+            if(tempNode->get_key() < node->m_key)
+            {
+                if(closest == nullptr){
+                    closest = tempNode;
+                } else if(tempNode->get_key() > closest->get_key()){
                     closest = tempNode;
                 }
-                tempNode->m_left;
             }
+            tempNode = tempNode->m_parent;
         }
     }
-    return closest;
+    return closest; //if most right leaf returns nullptr
 }
 
 template<class T, class K> 
