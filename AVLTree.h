@@ -162,47 +162,32 @@ void AVLTree<T, K>::unite_trees(AVLTree<T, K>& tree1, AVLTree<T, K>& tree2, AVLT
 
     typename AVLTree<T, K>::Node** arrayOfTree1 = new typename AVLTree<T, K>::Node*[tree1Size];
     tree1.in_order(arrayOfTree1);
-    for (int i = 0; i < tree1Size; i++)
-    {
-        std::cout << "tree 1 " << *(arrayOfTree1[i]->m_data) << std::endl;
-    }
     typename AVLTree<T, K>::Node** arrayOfTree2 = new typename AVLTree<T, K>::Node*[tree2Size];
     tree2.in_order(arrayOfTree2);
-    for (int i = 0; i < tree2Size; i++)
-    {
-        std::cout << "tree 2 " << *(arrayOfTree2[i]->m_data) << std::endl;
-    }
     typename AVLTree<T, K>::Node** newArrayTree = new typename AVLTree<T, K>::Node*[tree1Size + tree2Size];
     merge(arrayOfTree1, tree1Size, arrayOfTree2,  tree2Size, newArrayTree); 
-    for (int i = 0; i < tree2Size + tree1Size; i++)
-    {
-        std::cout << "merged array " << *(newArrayTree[i]->m_data) << std::endl;
-    }
     newTree.root = array_to_tree(newArrayTree, 0, tree1Size + tree2Size - 1);
     assert(newTree.root != nullptr);
     newTree.m_size = tree1Size + tree2Size;
-    std::cout << "the size is " << newTree.root->m_height << std::endl;
     fix_tree_height(newTree.root);
-    std::cout << "the size is " << newTree.root->m_height << std::endl;
 
-
+    delete[] arrayOfTree1;
+    delete[] arrayOfTree2;
+    delete[] newArrayTree;
 }
 
 template <class T, class K>
 void AVLTree<T, K>::merge(typename AVLTree<T, K>::Node* arrayTree1[], int na, typename AVLTree<T, K>::Node* arrayTree2[], 
                                                       int nb, typename AVLTree<T, K>::Node* newArrayTree[])
 {
-    std::cout << "na is " << na << " nb is " << nb << std::endl;
     int ia, ib, ic;
     try{
             for(ia = ib = ic = 0; (ia < na) && (ib < nb); ic++){
                 if(arrayTree1[ia]->m_key < arrayTree2[ib]->m_key){
-                    std::cout << "the key of a is " << arrayTree1[ia]->m_key << " wey of b is " << arrayTree2[ib]->m_key << std::endl;
                     newArrayTree[ic] = arrayTree1[ia];
                     ia++;
                 }
                 else {
-                    std::cout << "the key of a is " << arrayTree1[ia]->m_key << " wey of b is " << arrayTree2[ib]->m_key << std::endl;
                     newArrayTree[ic] = arrayTree2[ib];    
                     ib++;
                 }
@@ -224,7 +209,6 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::array_to_tree(typename AVLTree<T, K
     int mid = (start + end) / 2;
     assert(arrayTree[mid] != nullptr);
     typename AVLTree<T, K>::Node* newNode (new typename AVLTree<T, K>::Node(arrayTree[mid]->m_data, arrayTree[mid]->m_key ));
-    std::cout << "insert " << *(newNode->m_data) << std::endl;
 
     newNode->m_left = array_to_tree(arrayTree, start, mid - 1);
     if(newNode->m_left){
@@ -559,7 +543,9 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::get_following_node(Node* node) cons
     Node* tempNode = node;
     Node* closest = nullptr;
     if(node->m_right){
+        std::cout<< "in func right " << *(node->m_data) << std::endl;
         tempNode = node->m_right;
+        std::cout<< "in func right" << *(tempNode->m_data) << std::endl;
         while(tempNode->m_left){
             tempNode = tempNode->m_left;
         }
@@ -568,14 +554,16 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::get_following_node(Node* node) cons
         if(!tempNode->m_parent){
             return nullptr;
         }
+        closest = tempNode->m_parent;
         while(tempNode->m_parent->m_left != tempNode){
             tempNode = tempNode->m_left;
             if(!tempNode->m_parent){
                 return nullptr;
             }
+            closest = tempNode;
         }
-        closest = tempNode;
     }
+    std::cout<< "in func " << *(closest->m_data) << std::endl;
     return closest;
 }
 

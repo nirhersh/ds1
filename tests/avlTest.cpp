@@ -10,12 +10,14 @@
 bool searchTest(int& searchSucceededTests);
 bool pushTest(int& pushSucceededTests);
 bool removeTest(int& removeSucceededTests);
+bool unite_tree_Test(int& removeSucceededTests);
+bool get_preceding_following_Test(int& removeSucceededTests);
 
 
 
 
 int main(){
-    int searchSucceededTests, pushSucceededTests, removeSucceededTests;
+    int searchSucceededTests, pushSucceededTests, removeSucceededTests, uniteSucceededTests;
 
     // bool searchFunctionTest = searchTest(searchSucceededTests);
     // std::cout << "search passed " << searchSucceededTests << "out of 2 tests" << std::endl;
@@ -23,8 +25,14 @@ int main(){
     //bool pushFunctionTest = pushTest(pushSucceededTests);
     //std::cout << "push passed " << pushSucceededTests << "out of 7 tests" << std::endl;
 
-    bool removeFunctionTest = removeTest(removeSucceededTests);
-    std::cout << "remove passed " << removeSucceededTests << "out of 2 tests" << std::endl;
+    // bool removeFunctionTest = removeTest(removeSucceededTests);
+    // std::cout << "remove passed " << removeSucceededTests << "out of 2 tests" << std::endl;
+
+    // bool uniteTreesFunctionTest = unite_tree_Test(uniteSucceededTests);
+    // std::cout << "unite passed " << uniteSucceededTests << "out of 2 tests" << std::endl;
+
+    bool preFolTreesFunctionTest = get_preceding_following_Test(uniteSucceededTests);
+    std::cout << "preceding folloeing passed " << uniteSucceededTests << "out of 2 tests" << std::endl;
 
 
     return 0;
@@ -158,9 +166,10 @@ bool pushTest(int& pushSucceededTests)
 
 bool removeTest(int& removeSucceededTests)
 {
+    removeSucceededTests = 0;
     int c = 0;
     AVLTree<int, int> tree1;
-    int numOfInserst = 100000;
+    int numOfInserst = 100;
     int seed = 9187231;
     int treeSize = 0;
     
@@ -190,4 +199,95 @@ bool removeTest(int& removeSucceededTests)
     assert(treeSize == tree1.get_size());
     removeSucceededTests++;
     return true;
+}
+
+bool unite_tree_Test(int& uniteSucceededTests)
+{
+    uniteSucceededTests = 0;
+    int c = 0;
+    int numOfInserst = 1000000;
+    int seed = 1029;
+    int tree1Size = 0;
+    int tree2Size = 0;
+
+    AVLTree<int, int> tree1, tree2;
+    for (int i = 0; i < numOfInserst; i += 2)
+        {
+            try{
+                srand(seed + i);
+                int newVal = rand();
+                tree1.push(&c, newVal);
+                tree1Size++;
+            } catch (KeyAlreadyExists& err) {}
+            try{
+                srand(seed + i + 1);
+                int newVal = rand();
+                tree2.push(&c, newVal);
+                tree2Size++;
+            } catch (KeyAlreadyExists& err) {}
+        }
+    assert(tree1.get_size() == tree1Size && tree2.get_size() == tree2Size);
+
+    AVLTree<int, int> unitedTree;
+    AVLTree<int, int>::unite_trees(tree1, tree2, unitedTree);
+    assert(tree1.get_size() + tree2.get_size() == unitedTree.get_size());
+    uniteSucceededTests++;
+
+    AVLTree<int, int>::Node** unitedTreeArray = new AVLTree<int, int>::Node*[unitedTree.get_size()];
+    unitedTree.in_order(unitedTreeArray);
+    for (int i = 0; i < unitedTree.get_size() - 1; i++)
+    {
+        // if(unitedTreeArray[i]->get_key() > unitedTreeArray[i + 1]->get_key()){
+        //     std::cout << "WRONG ORDER IN NODE NUMBER " << i << std::endl; 
+        // }
+        assert((unitedTreeArray[i]->get_key()) <= (unitedTreeArray[i + 1]->get_key())); // there may be 2 nodes with the same key, 
+                                                                           //but this is not the job of unite trees to notice that
+    }
+    uniteSucceededTests++;
+    delete unitedTreeArray;
+
+    std::cout << "the height of the united Tree is " << unitedTree.get_height() << std::endl;
+
+
+}
+
+
+bool get_preceding_following_Test(int& preFolSucceededTests)
+{
+    AVLTree<int, int> Tree2;
+    int c = 0;
+    int d = 5;
+    int e = 8;
+    int numOfInserst = 100000;
+    int seed = 9187231;
+    int treeSize = 0;
+    int newVal;
+    
+    for (int i = 0; i < numOfInserst; ++i)
+        {
+            try{
+                srand(seed + i);
+                newVal = rand();
+                Tree2.push(&c, newVal);
+                treeSize++;
+            } catch (KeyAlreadyExists) {}
+        }
+    int leftleave = 5;
+    int secToLeft = 1;
+    try{
+        srand(seed + numOfInserst + 1);
+        newVal = rand();
+        Tree2.push(&d, newVal);
+        Tree2.push(&e, newVal + 1);
+        Tree2.push(&leftleave, c);
+        Tree2.push(&secToLeft, c + 1);
+    } catch (KeyAlreadyExists) {}
+    int* value = Tree2.get_following_value(newVal);
+    assert(*value == e);
+    preFolSucceededTests++;
+    int* value2 = Tree2.get_following_value(c);
+    std::cout << "value of following is " << *(value2) << std::endl; 
+    assert(*(value2) == secToLeft);
+    return true;
+
 }
