@@ -73,7 +73,7 @@ StatusType world_cup_t::add_player(int playerId, int teamId, int gamesPlayed,
 		//push new player to team tree
 		playersTeam->add_player(newPlayer);
 		//update top scorer if needed
-		if((*newPlayer) > (*m_bestPlayer)){
+		if(m_bestPlayer == nullptr || (*newPlayer) > (*m_bestPlayer)){
 			m_bestPlayer = newPlayer;
 		}
 		//update close to and close to me
@@ -150,15 +150,17 @@ StatusType world_cup_t::update_player_stats(int playerId, int gamesPlayed,
 	try{
 		//update the player stats
 		Player* player = m_allPlayersId.search(playerId);
+		Team* team = player->get_team();
+		//remove before the update because the key is the player itself
+		m_allPlayersGoals.remove(*player);
+		team->remove_player(*player);
 		player->add_games(gamesPlayed);
 		player->add_cards(cardsReceived);
 		player->add_goals(scoredGoals);
 		//update the player in the team trees
-		Team* team = player->get_team();
-		team->remove_player(*player);
 		team->add_player(player);	
 		//update the player in the players tree
-
+		m_allPlayersGoals.push(player, *player);
 
 	}catch(KeyDoesntExists& e){
 		return StatusType::FAILURE;
@@ -233,42 +235,161 @@ StatusType world_cup_t::unite_teams(int teamId1, int teamId2, int newTeamId)
 	if(!(m_teams.exists(teamId1)) || !(m_teams.exists(teamId2))){
 		return StatusType::FAILURE;
 	}
-	Team* team1 = 
-	Team* newTeam = new Team(newTeamId);
-	AVLTree<Team, int>::unite_trees()
+	Team* team1 = m_teams.search(teamId1);
+	Team* team2 = m_teams.search(teamId2);
+	Team* newTeamTreeById = new Team(newTeamId);
+	newTeamTreeById->merge_teams(team1, team2);
+	team1->empty_team();
+	team2->empty_team();
+	remove_team(teamId1);
+	remove_team(teamId2);
+	m_teams.push(newTeamTreeById, newTeamId);
+	if(newTeamTreeById->is_qulified()){
+		m_qualifiedTeams.push(newTeamTreeById, newTeamId);
+	}
 	return StatusType::SUCCESS;
 }
 
 output_t<int> world_cup_t::get_top_scorer(int teamId)
 {
-	// TODO: Your code goes here
-	return 2008;
+	if(teamId == 0){
+		return StatusType::INVALID_INPUT;
+	}
+	if(teamId > 0){
+		if(!m_teams.exists(teamId)){
+			return StatusType::FAILURE;
+		}
+		Team* currentTeam = m_teams.search(teamId);
+		if(currentTeam->get_total_players() == 0){
+			return StatusType::FAILURE;
+		} else return currentTeam->get_top_scorer_id();
+	} else if(!m_bestPlayer){
+		return StatusType::FAILURE;
+	} else return m_bestPlayer->get_id();
 }
 
 output_t<int> world_cup_t::get_all_players_count(int teamId)
 {
-	// TODO: Your code goes here
-    static int i = 0;
-    return (i++==0) ? 11 : 2;
+	if(teamId == 0){
+		return StatusType::INVALID_INPUT;
+	}
+	int num_of_players = 0;
+	if(teamId > 0){
+		try{
+			num_of_players = m_teams.search(teamId)->get_total_players();
+		}catch(KeyDoesntExists& e){
+			return StatusType::FAILURE;
+		}catch(std::bad_alloc& e){
+			return StatusType::ALLOCATION_ERROR;
+		}
+	}else{
+		num_of_players = m_allPlayersId.get_size();
+	}
+	return num_of_players;
 }
 
 StatusType world_cup_t::get_all_players(int teamId, int *const output)
 {
-	// TODO: Your code goes here
-    output[0] = 4001;
-    output[1] = 4002;
+	if(output == NULL || teamId == 0){
+		return StatusType::INVALID_INPUT;
+	}
+	if(teamId < 0){
+		if(m_allPlayersGoals.is_empty()){
+			return StatusType::FAILURE;
+		}
+		try{
+			Player** playersArray = new Player*[m_allPlayersGoals.get_size()];
+			m_allPlayersGoals.in_order(playersArray);
+			for(int i=0; i < m_allPlayersGoals.get_size(); i++){
+				output[i] = playersArray[i]->get_id();
+			}
+			delete[] playersArray;
+		}catch(std::bad_alloc& e){
+			return StatusType::ALLOCATION_ERROR;
+		}
+	}else{
+		try{
+			Team* team = m_teams.search(teamId);
+			if(team->get_total_players() == 0){
+				return StatusType::FAILURE;
+			}
+			Player** playersArray = new Player*[team->get_total_players()];
+			team->players_by_goals(playersArray);
+			for(int i=0; i<team->get_total_players(); i++){
+				output[i] = playersArray[i]->get_id();
+			}
+			delete[] playersArray;
+		}catch(KeyDoesntExists& e){
+			return StatusType::FAILURE;
+		}catch(std::bad_alloc& e){
+			return StatusType::ALLOCATION_ERROR;
+		}
+	}
 	return StatusType::SUCCESS;
 }
 
 output_t<int> world_cup_t::get_closest_player(int playerId, int teamId)
 {
-	// TODO: Your code goes here
-	return 1006;
+	if(playerId <=0 || teamId <= 0){
+		return StatusType::INVALID_INPUT;
+	}
+	try{
+		Team* team = m_teams.search(teamId);
+		Player* close = team->get_player(playerId)->get_close_to_me();
+		if(!close){
+			return StatusType::FAILURE;
+		}else{
+			return close->get_id();
+		}
+	}catch(KeyDoesntExists& e){
+		return StatusType::FAILURE;
+	}catch(std::bad_alloc& e){
+		return StatusType::ALLOCATION_ERROR;
+	}
 }
 
 output_t<int> world_cup_t::knockout_winner(int minTeamId, int maxTeamId)
 {
-	// TODO: Your code goes here
-	return 2;
-}
+	if(minTeamId < 0 || maxTeamId < 0 || maxTeamId < minTeamId){
+		return StatusType::INVALID_INPUT;
+	}
+	if(m_qualifiedTeams.is_empty()){
+		return StatusType::FAILURE;
+	}
+	try{
+		Team** qualified = new Team*[m_qualifiedTeams.get_size()];
+		m_qualifiedTeams.in_order(qualified);
+		
+		bool winner = false;
+		int steps = 1, minIndex = 0, maxIndex= 0;
+
+		for(int i = 0; i<m_qualifiedTeams.get_size(); i++){
+			if(qualified[i]->get_id() >= minTeamId){
+				minIndex = i;
+				break;
+			}
+		}
+		
+		for(int i = 0; i<m_qualifiedTeams.get_size(); i++){
+			if(qualified[i]->get_id() > maxTeamId){
+				maxIndex = i;
+				break;
+			}
+		}
+
+// 		SimulateTeam* knockout = new SimulateTeam[maxIndex - minIndex];
+// 		for(int i=0; )
+		
+// 		while(!winner){
+// 			for(int i=minIndex; i<maxIndex; i+=steps){
+// 				if(i + steps < maxIndex){
+					
+// 				}
+// 			}
+// 		}
+// 		delete[] qualified;
+// 	}
+// }
+
+
 

@@ -62,12 +62,14 @@ public:
     int get_height()const;
 
     /*
-    A function that returns
-    @param key: The key of the removed data
+    A function that returns the tree data in order
+    @param array: The array to save the in order array to
     */
     void in_order(T** array) const;
 
     void in_order(Node* array[]) const;
+
+    void in_order(K* array[]) const;
 
     void print_tree();
 
@@ -101,6 +103,7 @@ private:
     void switch_nodes(Node* node1,Node* node2);
     int in_order_recursion(T** array, Node* current, int index = 0) const;
     int in_order_recursion(Node* array[], Node* current, int index = 0) const;
+    int in_order_recursion(K* array[], Node* current, int index = 0) const;
     static void merge(Node* arrayTree1[], int na, Node* arrayTree2[], int nb, Node* newArrayTree[]);
     static Node* array_to_tree(Node** arrayTree, int start, int end);
     int calc_BF(Node* node);
@@ -135,16 +138,6 @@ template <class T, class K>
 bool AVLTree<T, K>::is_empty()const{
     return m_size == 0 ? true : false;
 }
-
-// template <class T, class K>
-// void merge(typename AVLTree<T, K>::Node* arrayTree1[], int na, typename AVLTree<T, K>::Node* arrayTree2[], 
-//                                                       int nb, typename AVLTree<T, K>::Node* newArrayTree[]);
-
-// template <class T, class K>
-// void unite_trees(AVLTree<T, K>& tree1, AVLTree<T, K>& tree2, AVLTree<T, K>& newTree);
-
-// template <class T, class K>
-// typename AVLTree<T, K>::Node* array_to_tree(typename AVLTree<T, K>::Node** arrayTree, int start, int end);
 
 
 //-------------------- Node Implemantation --------------------
@@ -593,12 +586,17 @@ int AVLTree<T, K>::get_size()const{
 template<class T, class K>
 void AVLTree<T ,K>::in_order(T** array) const{
     in_order_recursion(array, root, 0);
-    }
+}
 
 template<class T, class K>
 void AVLTree<T ,K>::in_order(Node* array[]) const{
     in_order_recursion(array, root, 0);
-    }
+}
+
+template<class T, class K>
+void AVLTree<T ,K>::in_order(K* array[]) const{
+    in_order_recursion(array, root, 0);
+}
 
 template<class T, class K>
 int AVLTree<T, K>::in_order_recursion(T** array, Node* current, int index) const
@@ -626,6 +624,19 @@ int AVLTree<T, K>::in_order_recursion(Node* array[], Node* current, int index) c
         return index;
     }
     array[index++] = current;
+    return in_order_recursion(array, current->m_right, index);
+}
+
+template<class T, class K>
+int AVLTree<T, K>::in_order_recursion(K* array[], Node* current, int index = 0) const{
+    if(current == nullptr){
+        return index;
+    }
+    index = in_order_recursion(array, current->m_left, index);
+    if(index >= m_size){
+        return index;
+    }
+    array[index++] = current->m_key;
     return in_order_recursion(array, current->m_right, index);
 }
 

@@ -63,6 +63,10 @@ public:
 
     Player* get_close_to_me();
 
+    void set_games_played(int games);
+
+    void set_team(Team* team);
+
     Player* closest(Player* player1, Player* player2);
 
     /*

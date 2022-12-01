@@ -43,7 +43,7 @@ Player* Player::get_left(){
 }
 
 Player* Player::get_close_to_me(){
-    return closest(m_left, m_right);
+    return closest(m_left, m_right);//might be nullptr
 }
 
 void Player::update_left(Player* player){
@@ -119,4 +119,14 @@ bool operator<(const Player& first, const Player& second)
 bool operator==(const Player& first, const Player& second)
 {
     return first.m_goals == second.m_goals && first.m_playerId == second.m_playerId && first.m_cards == second.m_cards;
+}
+
+void Player::set_games_played(int games)
+{
+    m_gamesPlayed = games;
+}
+
+void Player::set_team(Team* team)
+{
+   m_team = team; 
 }

@@ -29,6 +29,16 @@ private:
 	AVLTree<Team, int> m_teams;
 	AVLTree<Team, int> m_qualifiedTeams;
 	Player* m_bestPlayer;
+
+	struct SimulateTeam{
+	public:
+		SimulateTeam(int teamId=0, int teamPoints=0) : m_teamId(teamId), m_teamPoints(teamPoints){}
+	private:
+		int m_teamId;
+		int m_teamPoints;
+		friend class world_cup_t;
+	};
+	
 	
 public:
 	// <DO-NOT-MODIFY> {
