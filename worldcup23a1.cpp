@@ -348,34 +348,36 @@ output_t<int> world_cup_t::get_closest_player(int playerId, int teamId)
 	}
 }
 
-output_t<int> world_cup_t::knockout_winner(int minTeamId, int maxTeamId)
-{
-	if(minTeamId < 0 || maxTeamId < 0 || maxTeamId < minTeamId){
-		return StatusType::INVALID_INPUT;
-	}
-	if(m_qualifiedTeams.is_empty()){
-		return StatusType::FAILURE;
-	}
-	try{
-		Team** qualified = new Team*[m_qualifiedTeams.get_size()];
-		m_qualifiedTeams.in_order(qualified);
+// output_t<int> world_cup_t::knockout_winner(int minTeamId, int maxTeamId)
+// {
+// 	if(minTeamId < 0 || maxTeamId < 0 || maxTeamId < minTeamId){
+// 		return StatusType::INVALID_INPUT;
+// 	}
+// 	if(m_qualifiedTeams.is_empty()){
+// 		return StatusType::FAILURE;
+// 	}
+// 	try{
+// 		Team** qualified = new Team*[m_qualifiedTeams.get_size()];
+// 		m_qualifiedTeams.in_order(qualified);
 		
-		bool winner = false;
-		int steps = 1, minIndex = 0, maxIndex= 0;
+// 		bool winner = false;
+// 		int steps = 1, minIndex = 0, maxIndex= 0;
 
-		for(int i = 0; i<m_qualifiedTeams.get_size(); i++){
-			if(qualified[i]->get_id() >= minTeamId){
-				minIndex = i;
-				break;
-			}
-		}
+// 		for(int i = 0; i<m_qualifiedTeams.get_size(); i++){
+// 			if(qualified[i]->get_id() >= minTeamId){
+// 				minIndex = i;
+// 				break;
+// 			}
+// 		}
 		
-		for(int i = 0; i<m_qualifiedTeams.get_size(); i++){
-			if(qualified[i]->get_id() > maxTeamId){
-				maxIndex = i;
-				break;
-			}
-		}
+// 		for(int i = 0; i<m_qualifiedTeams.get_size(); i++){
+// 			if(qualified[i]->get_id() > maxTeamId){
+// 				maxIndex = i;
+// 				break;
+// 			}
+// 		}
+// 	}
+// }
 
 // 		SimulateTeam* knockout = new SimulateTeam[maxIndex - minIndex];
 // 		for(int i=0; )
@@ -390,6 +392,4 @@ output_t<int> world_cup_t::knockout_winner(int minTeamId, int maxTeamId)
 // 		delete[] qualified;
 // 	}
 // }
-
-
 
