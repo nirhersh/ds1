@@ -45,6 +45,10 @@ int Team::get_team_score(){
     return m_points+m_totalGoals-m_cards;
 }
 
+Player* Team::get_player(int playerId) const{
+    return playersById.search(playerId);
+}
+
 bool Team::is_qulified(){
     if(m_hasGoalkeeper && playersById.get_size() >= 11){
         return true;
@@ -76,7 +80,7 @@ void Team::add_player(Player* newPlayer){
         m_goalkeeperCounter++;
     }
     m_hasGoalkeeper = m_goalkeeperCounter > 0 ? true : false;
-    if((*newPlayer) > (*m_topScorer)){
+    if(!m_topScorer || (*newPlayer) > (*m_topScorer)){
         m_topScorer = newPlayer;
     }
     playersById.push(newPlayer, (*newPlayer).get_id());
@@ -84,7 +88,7 @@ void Team::add_player(Player* newPlayer){
 }
 
 void Team::remove_player(Player player){
-    if(*m_topScorer == player){
+    if(!m_topScorer && *m_topScorer == player){
         m_topScorer = PlayersByGoals.get_preceding_value(player);
     }
     playersById.remove(player.get_id());
@@ -94,6 +98,52 @@ void Team::remove_player(Player player){
     if(player.is_goalkeeper()){
         m_goalkeeperCounter--;
         m_hasGoalkeeper = m_goalkeeperCounter > 0 ? true : false;
+    }
+}
+
+void Team::merge_teams(Team* team1, Team* team2){
+    AVLTree<Player, int>::unite_trees(team1->playersById, team2->playersById, playersById);
+    AVLTree<Player, Player>::unite_trees(team1->PlayersByGoals, team2->PlayersByGoals, PlayersByGoals);
+    add_points(team1->get_team_points() + team2->get_team_points());
+    add_goals(team1->get_total_goals() + team2->get_total_goals());
+    add_cards(team1->get_team_cards() + team2->get_team_cards());
+    m_gamesPlayed = 0;
+    m_goalkeeperCounter = team1->m_goalkeeperCounter + team2->m_goalkeeperCounter;
+    if(!team1->m_topScorer){
+        m_topScorer = team2->m_topScorer;   
+    } else if(!team2->m_topScorer){
+        m_topScorer = team1->m_topScorer;   
+    } else{
+        m_topScorer = *(team1->m_topScorer) > *(team2->m_topScorer)? team1->m_topScorer : team2->m_topScorer; 
+    }
+
+    //updating player's games played and tems pointer
+    Player** playerOfTree1 = new Player*[team1->get_total_players()];
+    playersById.in_order(playerOfTree1);
+    int team1Games = team1->get_games_played();
+    for (int i = 0; i < team1->get_total_players(); i++)
+    {
+        playerOfTree1[i]->set_games_played(playerOfTree1[i]->get_games_played() + team1Games);
+        playerOfTree1[i]->set_team(this);
+    }
+
+    Player** playerOfTree2 = new Player*[team2->get_total_players()];
+    int team2Games = team2->get_games_played();
+    for (int i = 0; i < team2->get_total_players(); i++)
+    {
+        playerOfTree2[i]->set_games_played(playerOfTree2[i]->get_games_played() + team2Games);
+        playerOfTree2[i]->set_team(this);
+    }
+}
+
+void Team::players_by_goals(Player** playerArray){
+    PlayersByGoals.in_order(playerArray);
+}
+
+void Team::empty_team()
+{
+    while(m_topScorer){
+        remove_player(*(m_topScorer));
     }
 }
 

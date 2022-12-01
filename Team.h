@@ -24,7 +24,11 @@ public:
     int get_id();
     int get_games_played();
     int get_team_score();
+    Player* get_player(int playerId) const;
     bool is_qulified();
+    void merge_teams(Team* team1, Team* team2);
+    void players_by_goals(Player** playerArray);
+    void empty_team();
     /*
         setters:
     */
