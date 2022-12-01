@@ -170,7 +170,7 @@ bool removeTest(int& removeSucceededTests)
     int c = 0;
     AVLTree<int, int> tree1;
     int numOfInserst = 100;
-    int seed = 9187231;
+    int seed = 5476;
     int treeSize = 0;
     
     for (int i = 0; i < numOfInserst; ++i)

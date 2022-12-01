@@ -14,8 +14,8 @@ int Player::get_id(){
     return m_playerId;
 }
 
-int Player::get_team_id(){
-    return m_team->get_id();
+Team* Player::get_team(){
+    return m_team;
 }
 
 int Player::get_games_played(){

@@ -47,7 +47,7 @@ public:
 
     int get_id();
 
-    int get_team_id();
+    Team* get_team();
 
     int get_games_played();
 

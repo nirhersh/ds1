@@ -122,7 +122,7 @@ StatusType world_cup_t::remove_player(int playerId)
 			closePlayerRight->update_left(playerToRemove->get_left());
 		}
 		//remove from team and world cup trees
-		int teamId = playerToRemove->get_team_id();
+		int teamId = playerToRemove->get_team()->get_id();
 		Team* team = m_teams.search(teamId);
 		bool wasQualified = team->is_qulified();
 		team->remove_player(*playerToRemove);
@@ -154,7 +154,7 @@ StatusType world_cup_t::update_player_stats(int playerId, int gamesPlayed,
 		player->add_cards(cardsReceived);
 		player->add_goals(scoredGoals);
 		//update the player in the team trees
-		Team* team = m_teams.search(player->get_team_id());
+		Team* team = player->get_team();
 		team->remove_player(*player);
 		team->add_player(player);	
 		//update the player in the players tree
@@ -170,33 +170,72 @@ StatusType world_cup_t::update_player_stats(int playerId, int gamesPlayed,
 
 StatusType world_cup_t::play_match(int teamId1, int teamId2)
 {
-	// TODO: Your code goes here
+	//check input
+	if(teamId1 <=0 || teamId2 <=0 || teamId1 == teamId2){
+		return StatusType::INVALID_INPUT;
+	}
+	//check kosher (qualified)
+	if(!(m_qualifiedTeams.exists(teamId1)) || !(m_qualifiedTeams.exists(teamId2))){
+		return StatusType::FAILURE;
+	}
+	//apply match
+	Team* team1 = m_qualifiedTeams.search(teamId1);
+	Team* team2 = m_qualifiedTeams.search(teamId2);
+	if(team2->get_team_score() > team2->get_team_score()){
+		team1->add_points(3);
+	} else if(team2->get_team_score() < team2->get_team_score()){
+		team2->add_points(3);
+	} else{
+		team1->add_points(1);
+		team2->add_points(1);
+	}
+	team1->add_game();
+	team1->add_game();
 	return StatusType::SUCCESS;
 }
 
 output_t<int> world_cup_t::get_num_played_games(int playerId)
 {
-	// TODO: Your code goes here
-	return 22;
+	if(playerId <= 0){
+		return StatusType::INVALID_INPUT;
+	}
+	if(!m_allPlayersId.exists(playerId)){
+		return StatusType::FAILURE;
+	}
+	Player* player1 = m_allPlayersId.search(playerId);
+	return(player1->get_games_played() + player1->get_team()->get_games_played());
 }
 
 output_t<int> world_cup_t::get_team_points(int teamId)
 {
-	// TODO: Your code goes here
-	return 30003;
+	//check input
+	if(teamId <=0){
+		return StatusType::INVALID_INPUT;
+	}
+	//check existence
+	if(!(m_teams.exists(teamId))){
+		return StatusType::FAILURE;
+	}
+	return m_teams.search(teamId)->get_team_points();
 }
 
 StatusType world_cup_t::unite_teams(int teamId1, int teamId2, int newTeamId)
 {
+	//check input
 	if(teamId1 <= 0 || teamId2 <= 0 || teamId1 == teamId2 || newTeamId <= 0){
 		return StatusType::INVALID_INPUT;
 	}
+	//check newteamId
 	if(m_teams.exists(newTeamId) && newTeamId != teamId1 && newTeamId != teamId2){
 		return StatusType::FAILURE;
 	}
+	//check existence of tree 1 and 2
 	if(!(m_teams.exists(teamId1)) || !(m_teams.exists(teamId2))){
 		return StatusType::FAILURE;
 	}
+	Team* team1 = 
+	Team* newTeam = new Team(newTeamId);
+	AVLTree<Team, int>::unite_trees()
 	return StatusType::SUCCESS;
 }
 
