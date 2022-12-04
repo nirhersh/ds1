@@ -19,7 +19,7 @@
 #include "Player.h"
 #include "Team.h"
 #include "AVLTree.h"
-#include "exception.h"
+#include "Exception.h"
 #include <assert.h>
 class world_cup_t {
 private:
@@ -41,6 +41,7 @@ private:
 	
 	
 public:
+	int get_num_of_teams();
 	// <DO-NOT-MODIFY> {
 	
 	world_cup_t();

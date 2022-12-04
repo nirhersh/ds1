@@ -1,5 +1,9 @@
 #include "worldcup23a1.h"
 
+int world_cup_t::get_num_of_teams(){
+	return m_teams.get_size();
+}
+
 world_cup_t::world_cup_t(): m_bestPlayer(nullptr){}
 
 world_cup_t::~world_cup_t()
@@ -389,7 +393,7 @@ output_t<int> world_cup_t::knockout_winner(int minTeamId, int maxTeamId)
 		SimulateTeam* knockout = nullptr;
 		knockout_size = maxIndex - minIndex;
 		try{
-			SimulateTeam* knockout = new SimulateTeam[knockout_size];
+			knockout = new SimulateTeam[knockout_size];
 		}catch(std::bad_alloc& e){
 			delete[] qualified;
 			return StatusType::ALLOCATION_ERROR;

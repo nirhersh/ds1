@@ -467,13 +467,13 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::search_node(const K& key) const
         }
         if (key > currentNode->m_key){
             currentNode = currentNode->m_right;
-        }else if(key == currentNode->m_key){
-            found = true;
-            return currentNode;
-        }else{
+        }else if(key < currentNode->m_key){
             currentNode = currentNode->m_left;
+        }else{
+            found = true;
         }
     }
+    return currentNode;
 }
 
 template<class T, class K>
@@ -625,7 +625,7 @@ template<class T, class K>
 bool AVLTree<T, K>::exists(const K& key) const
 {
     try{
-        Node* temp = search_node(key);
+        search_node(key);
     } catch (KeyDoesntExists& var) {
         return false;
     }
