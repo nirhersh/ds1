@@ -64,6 +64,10 @@ public:
 	output_t<int> get_num_played_games(int playerId);
 	
 	output_t<int> get_team_points(int teamId);
+
+	int is_qualified(int teamId);
+
+	bool is_team_exists(int teamId);
 	
 	StatusType unite_teams(int teamId1, int teamId2, int newTeamId);
 	

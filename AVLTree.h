@@ -438,6 +438,10 @@ void AVLTree<T, K>::remove(const K& key)
 {
     Node* nodeToRemove = search_node(key);
     Node* currentNode = remove_node(nodeToRemove); 
+    if(currentNode == nullptr){
+        m_size--;
+        return;
+    }
     Node* parent = currentNode->m_parent;
     do{
         int parentHeight = currentNode->m_parent? currentNode->m_parent->m_height: 0;
@@ -479,38 +483,51 @@ typename AVLTree<T, K>::Node* AVLTree<T, K>::search_node(const K& key) const
 template<class T, class K>
 typename AVLTree<T, K>::Node* AVLTree<T, K>::remove_node(Node* nodeToRemove){
     bool isRight = false;
+    assert(nodeToRemove);
     if(nodeToRemove->m_parent != nullptr && nodeToRemove->m_parent->m_right == nodeToRemove){
             isRight = true;
     }
     Node* nodeToReturn;
     if (nodeToRemove->m_right == nullptr && nodeToRemove->m_left == nullptr)
     {
-        if(!isRight){
-           nodeToRemove->m_parent->m_left = nullptr; 
-        }
-        else{
-            nodeToRemove->m_parent->m_right = nullptr;
+        if(nodeToRemove != root){
+            if(!isRight){
+                nodeToRemove->m_parent->m_left = nullptr; 
+            }
+            else{
+                nodeToRemove->m_parent->m_right = nullptr;
+            }
+        } else {
+            root = nullptr;
         }
         nodeToReturn = nodeToRemove->m_parent;
         delete nodeToRemove; 
     }
     else if(nodeToRemove->m_right != nullptr && nodeToRemove->m_left == nullptr){
-        if(isRight){
-            nodeToRemove->m_parent->m_right = nodeToRemove->m_right;
-        }
-        else {
-            nodeToRemove->m_parent->m_left = nodeToRemove->m_right;
+        if(nodeToRemove != root){
+            if(isRight){
+                nodeToRemove->m_parent->m_right = nodeToRemove->m_right;
+            }
+            else {
+                nodeToRemove->m_parent->m_left = nodeToRemove->m_right;
+            }
+        }else{
+            root = root->m_right;
         }
         nodeToRemove->m_right->m_parent = nodeToRemove->m_parent;
         nodeToReturn = nodeToRemove->m_right;
         delete nodeToRemove;
     }
     else if(nodeToRemove->m_right == nullptr && nodeToRemove->m_left != nullptr){
-        if(isRight){
-            nodeToRemove->m_parent->m_right = nodeToRemove->m_left;
-        }
-        else {
-            nodeToRemove->m_parent->m_left = nodeToRemove->m_left;
+        if(nodeToRemove != root){
+            if(isRight){
+                nodeToRemove->m_parent->m_right = nodeToRemove->m_left;
+            }
+            else {
+                nodeToRemove->m_parent->m_left = nodeToRemove->m_left;
+            }
+        }else{
+            root = root->m_left;
         }
         nodeToRemove->m_left->m_parent = nodeToRemove->m_parent;
         nodeToReturn = nodeToRemove->m_left;

@@ -11,6 +11,7 @@ Team::Team(int teamId, int points, int goals, int cards, int gamesPlayed, bool h
     m_teamId = teamId;
     m_points = points;
     m_goalkeeperCounter = 0;
+    m_topScorer = nullptr;
 }
 
 int Team::get_id(){
@@ -74,13 +75,20 @@ void Team::add_cards(int cards){
 }
 
 void Team::add_player(Player* newPlayer){
+    if(newPlayer == nullptr){
+        return;
+    }
     m_cards += newPlayer->get_cards();
     m_totalGoals += newPlayer->get_goals();
     if(newPlayer->is_goalkeeper()){
         m_goalkeeperCounter++;
     }
     m_hasGoalkeeper = m_goalkeeperCounter > 0 ? true : false;
-    if(!m_topScorer || (*newPlayer) > (*m_topScorer)){
+    if(m_topScorer && newPlayer){
+        if((*newPlayer) > (*m_topScorer)){
+            m_topScorer = newPlayer;
+        }
+    }else{
         m_topScorer = newPlayer;
     }
     playersById.push(newPlayer, (*newPlayer).get_id());

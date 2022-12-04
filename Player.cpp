@@ -4,10 +4,16 @@ Player::Player(int playerId, Team* team, bool goalKeeper,  int gamesPlayed, int 
     if(playerId <= 0 || team->get_id() <= 0 || gamesPlayed < 0 || goals < 0 || cards < 0){
         throw InvalidArguments();
     }
+    if(gamesPlayed == 0 && (cards != 0 || goals != 0)){
+        throw InvalidArguments();
+    }
     m_team = team;
     m_playerId = playerId;
     m_goals = goals;
     m_cards = cards;
+    m_gamesPlayed = gamesPlayed;
+    m_left = nullptr;
+    m_right = nullptr;
 }
 
 int Player::get_id(){
