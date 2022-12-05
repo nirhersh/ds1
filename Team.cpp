@@ -134,23 +134,23 @@ void Team::merge_teams(Team* team1, Team* team2){
 
     //updating player's games played and teams pointer
     Player** playerOfTree1 = new Player*[team1->get_total_players()];
-    playersById.in_order(playerOfTree1);
-    int team1Games = team1->get_games_played();
+    team1->playersById.in_order(playerOfTree1);
     for (int i = 0; i < team1->get_total_players(); i++)
     {
-        playerOfTree1[i]->set_games_played(playerOfTree1[i]->get_games_played() + team1Games);
+        playerOfTree1[i]->set_games_played(playerOfTree1[i]->get_games_played());
         playerOfTree1[i]->set_team(this);
     }
-
     Player** playerOfTree2 = new Player*[team2->get_total_players()];
-    int team2Games = team2->get_games_played();
+    team2->playersById.in_order(playerOfTree2);
     for (int i = 0; i < team2->get_total_players(); i++)
     {
-        playerOfTree2[i]->set_games_played(playerOfTree2[i]->get_games_played() + team2Games);
-
+        assert(playerOfTree2[i]->get_team());
+        playerOfTree2[i]->set_games_played(playerOfTree2[i]->get_games_played());
         playerOfTree2[i]->set_team(this);
-
     }
+    delete[] playerOfTree1;
+    delete[] playerOfTree2;
+    
 }
 
 void Team::players_by_goals(Player** playerArray){

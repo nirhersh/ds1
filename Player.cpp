@@ -25,6 +25,7 @@ Team* Player::get_team(){
 }
 
 int Player::get_games_played(){
+    assert(m_team);
     return m_gamesPlayed + m_team->get_games_played();
 }
 

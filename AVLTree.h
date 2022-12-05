@@ -174,6 +174,13 @@ void AVLTree<T, K>::unite_trees(AVLTree<T, K>& tree1, AVLTree<T, K>& tree2, AVLT
     typename AVLTree<T, K>::Node** newArrayTree = new typename AVLTree<T, K>::Node*[tree1Size + tree2Size];
     merge(arrayOfTree1, tree1Size, arrayOfTree2,  tree2Size, newArrayTree); 
     newTree.root = array_to_tree(newArrayTree, 0, tree1Size + tree2Size - 1);
+    if(newTree.root->m_left){
+        newTree.root->m_left->m_parent = newTree.root;
+    }
+    if(newTree.root->m_right){
+        newTree.root->m_right->m_parent = newTree.root;
+    }
+    std::cout << "Fwsfaea" << std::endl;
     assert(newTree.root != nullptr);
     newTree.m_size = tree1Size + tree2Size;
     fix_tree_height(newTree.root);
@@ -306,6 +313,7 @@ void AVLTree<T, K>::balance_tree(Node* newNode)
     Node* tempNode = newNode;
     while(tempNode != root)
     {
+        assert(tempNode->m_parent);
         if(tempNode->m_parent->m_height >= tempNode->m_height + 1)
         {
             return;

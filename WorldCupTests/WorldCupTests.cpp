@@ -2389,7 +2389,7 @@ TEST_CASE("unite_teams")
         REQUIRE(res == StatusType::SUCCESS);
         res = obj->add_team(2, 2);
         REQUIRE(res == StatusType::SUCCESS);
-        res = obj->add_player(1002, 2, 1, 3, 4, false);
+        res = obj->add_player(1002, 2, 1, 3, 4, false);\
         REQUIRE(res == StatusType::SUCCESS);
         res = obj->unite_teams(1, 2, 3);
         REQUIRE(res == StatusType::SUCCESS);
@@ -2420,6 +2420,7 @@ TEST_CASE("unite_teams")
         res = obj->add_player(1002, 3, 1, 3, 4, false);
         REQUIRE(res == StatusType::FAILURE);
         res = obj->add_player(1003, 3, 1, 1, 1, false);
+        //res = obj->add_player(1003, 5, 1, 1, 1, false);
         REQUIRE(res == StatusType::SUCCESS);
         res = obj->add_player(1004, 4, 1, 1, 2, true);
         REQUIRE(res == StatusType::SUCCESS);
