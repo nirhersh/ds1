@@ -11,7 +11,10 @@ Team::Team(int teamId, int points, int goals, int cards, int gamesPlayed, bool h
     m_teamId = teamId;
     m_points = points;
     m_goalkeeperCounter = 0;
+    m_num_of_players = 0;
     m_topScorer = nullptr;
+    m_left = nullptr;
+    m_right = nullptr;
 }
 
 int Team::get_id(){
@@ -35,7 +38,7 @@ int Team::get_top_scorer_id(){
 }
 
 int Team::get_total_players(){
-    return playersById.get_size();
+    return m_num_of_players;
 }
 
 int Team::get_games_played(){
@@ -93,6 +96,7 @@ void Team::add_player(Player* newPlayer){
     }
     playersById.push(newPlayer, (*newPlayer).get_id());
     PlayersByGoals.push(newPlayer, *newPlayer);
+    m_num_of_players++;
 }
 
 void Team::remove_player(Player player){
@@ -107,6 +111,7 @@ void Team::remove_player(Player player){
         m_goalkeeperCounter--;
         m_hasGoalkeeper = m_goalkeeperCounter > 0 ? true : false;
     }
+    --m_num_of_players;
 }
 
 void Team::merge_teams(Team* team1, Team* team2){
@@ -117,6 +122,8 @@ void Team::merge_teams(Team* team1, Team* team2){
     add_cards(team1->get_team_cards() + team2->get_team_cards());
     m_gamesPlayed = 0;
     m_goalkeeperCounter = team1->m_goalkeeperCounter + team2->m_goalkeeperCounter;
+    m_hasGoalkeeper = m_goalkeeperCounter;
+    m_num_of_players = team1->m_num_of_players + team2->m_num_of_players;
     if(!team1->m_topScorer){
         m_topScorer = team2->m_topScorer;   
     } else if(!team2->m_topScorer){
@@ -125,7 +132,7 @@ void Team::merge_teams(Team* team1, Team* team2){
         m_topScorer = *(team1->m_topScorer) > *(team2->m_topScorer)? team1->m_topScorer : team2->m_topScorer; 
     }
 
-    //updating player's games played and tems pointer
+    //updating player's games played and teams pointer
     Player** playerOfTree1 = new Player*[team1->get_total_players()];
     playersById.in_order(playerOfTree1);
     int team1Games = team1->get_games_played();
@@ -140,7 +147,9 @@ void Team::merge_teams(Team* team1, Team* team2){
     for (int i = 0; i < team2->get_total_players(); i++)
     {
         playerOfTree2[i]->set_games_played(playerOfTree2[i]->get_games_played() + team2Games);
+
         playerOfTree2[i]->set_team(this);
+
     }
 }
 
@@ -150,9 +159,26 @@ void Team::players_by_goals(Player** playerArray){
 
 void Team::empty_team()
 {
-    while(m_topScorer){
-        remove_player(*(m_topScorer));
-    }
+    m_topScorer = nullptr;
+    m_num_of_players = 0;
+    m_left = nullptr;
+    m_right = nullptr;
 }
 
+Team* Team::get_left(){
+    return m_left;
+}
+
+
+Team* Team::get_right(){
+    return m_right;
+}
+
+void Team::set_right(Team* team){
+    m_right = team;
+}
+
+void Team::set_left(Team* team){
+    m_left = team;
+}
 #endif

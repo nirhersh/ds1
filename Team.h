@@ -24,6 +24,8 @@ public:
     int get_id();
     int get_games_played();
     int get_team_score();
+    Team* get_left();
+    Team* get_right();
     Player* get_player(int playerId) const;
     bool is_qulified();
     void merge_teams(Team* team1, Team* team2);
@@ -36,6 +38,8 @@ public:
     void add_goals(int goals);
     void add_cards(int cards);
     void set_top_scorer_id(int playerId);
+    void set_left(Team* team);
+    void set_right(Team* team);
     void add_player(Player* newPlayer);
     void add_game();
     void remove_player(Player player);
@@ -46,9 +50,12 @@ private:
     int m_totalGoals;
     int m_cards;
     int m_gamesPlayed;
+    int m_num_of_players;
     int m_goalkeeperCounter;
     bool m_hasGoalkeeper;
     Player* m_topScorer;
+    Team* m_left;
+    Team* m_right;
     AVLTree<Player, int> playersById;
     AVLTree<Player, Player> PlayersByGoals;
 };

@@ -56,6 +56,7 @@ StatusType world_cup_t::remove_team(int teamId)
 			return StatusType::FAILURE;
 		}else{
 			m_teams.remove(teamId);
+			delete teamToRemove;
 		}
 	}catch(std::bad_alloc& e){
 		return StatusType::ALLOCATION_ERROR;
@@ -101,6 +102,16 @@ StatusType world_cup_t::add_player(int playerId, int teamId, int gamesPlayed,
 		newPlayer->update_right(closeToNewPlayerRight);
 		if(playersTeam->is_qulified() && !wasQualified){
 			m_qualifiedTeams.push(playersTeam, teamId);
+			Team* newLeft = m_qualifiedTeams.get_preceding_value(playersTeam->get_id());
+			playersTeam->set_left(newLeft);
+			if(newLeft){
+				newLeft->set_right(playersTeam);
+			}
+			Team* newRight = m_qualifiedTeams.get_following_value(playersTeam->get_id());
+			playersTeam->set_right(newRight);
+			if(newRight){
+				newRight->set_left(playersTeam);
+			}
 		}
 	}catch(std::bad_alloc& e){
 		return StatusType::ALLOCATION_ERROR;
@@ -145,6 +156,12 @@ StatusType world_cup_t::remove_player(int playerId)
 		//check if team is still qualified
 		bool qualified = team->is_qulified();
 		if(wasQualified && !qualified){
+			if(team->get_left()){
+				team->get_left()->set_right(team->get_right());
+			}
+			if(team->get_right()){
+				team->get_right()->set_left(team->get_left());	
+			}
 			m_qualifiedTeams.remove(teamId);
 		}
 		delete playerToRemove;
@@ -261,6 +278,16 @@ StatusType world_cup_t::unite_teams(int teamId1, int teamId2, int newTeamId)
 	m_teams.push(newTeamTreeById, newTeamId);
 	if(newTeamTreeById->is_qulified()){
 		m_qualifiedTeams.push(newTeamTreeById, newTeamId);
+		Team* newLeft = m_qualifiedTeams.get_preceding_value(newTeamId);
+		newTeamTreeById->set_left(newLeft);
+		if(newLeft){
+			newLeft->set_right(newTeamTreeById);
+		}
+		Team* newRight = m_qualifiedTeams.get_following_value(newTeamId);
+		newTeamTreeById->set_right(newRight);
+		if(newRight){
+			newRight->set_left(newTeamTreeById);
+		}
 	}
 	return StatusType::SUCCESS;
 }
@@ -372,61 +399,27 @@ output_t<int> world_cup_t::knockout_winner(int minTeamId, int maxTeamId)
 		return StatusType::FAILURE;
 	}
 	try{
-		Team** qualified = nullptr;
 		//get qualified teams in order
-		try{
-			qualified = new Team*[m_qualifiedTeams.get_size()];
-		}catch(std::bad_alloc& e){
-			return StatusType::ALLOCATION_ERROR;
-		}
-		m_qualifiedTeams.in_order(qualified);
-		for(int i = 0; i<m_qualifiedTeams.get_size(); i++){
-			std::cout << "team " << qualified[i]->get_id() <<" "<< qualified[i]->get_team_score() << std::endl;
+		Team* minTeam = m_qualifiedTeams.binary_search_closest(minTeamId);
+		if(minTeam == nullptr){
+			return StatusType::FAILURE;
 		}
 		bool winner = false;
-		int steps = 1, minIndex = 0, maxIndex = 0, knockout_size = 0;
-
-		if(qualified[0]->get_id() > maxTeamId || qualified[m_qualifiedTeams.get_size() - 1]->get_id() < minTeamId){
-			return StatusType::FAILURE;
-		}
-		std::cout<< __LINE__ << std::endl;
-		//find the index of the minimum team
-		for(int i = 0; i<m_qualifiedTeams.get_size(); i++){
-			if(qualified[i]->get_id() >= minTeamId){
-				minIndex = i;
+		int steps = 1, knockout_size = 0;
+		SimulateTeam* knockout = new SimulateTeam[maxTeamId - minTeamId];
+		Team* currentTeam = minTeam;
+		while(currentTeam){
+			if(currentTeam->get_id() > maxTeamId){
 				break;
 			}
-		}
-		std::cout<< __LINE__ << std::endl;
-		//find the index of the maximum team
-		for(int i = m_qualifiedTeams.get_size() - 1; i >= 0; i--){
-			if(qualified[i]->get_id() <= maxTeamId){
-				maxIndex = i+1;
-				break;
-			}
+			knockout[knockout_size] = SimulateTeam(currentTeam->get_id(), currentTeam->get_team_score());
+			knockout_size++;
+			currentTeam = currentTeam->get_right();
 		}
 
-		std::cout<< __LINE__ << std::endl;
-
-		//save all the relevant teams in the simulated form to an array in order
-		SimulateTeam* knockout = nullptr;
-		knockout_size = maxIndex - minIndex;
 		if(knockout_size == 0){
-			delete[] qualified;
+			delete[] knockout;
 			return StatusType::FAILURE;
-		}
-		try{
-			knockout = new SimulateTeam[knockout_size];
-		}catch(std::bad_alloc& e){
-			delete[] qualified;
-			return StatusType::ALLOCATION_ERROR;
-		}
-		for(int i=minIndex; i<maxIndex; i++){
-			knockout[i - minIndex] = SimulateTeam(qualified[i]->get_id(), qualified[i]->get_team_score());
-		}
-
-		for(int i = 0; i<knockout_size; i++){
-			std::cout << "team " << knockout[i].m_teamId <<" "<< knockout[i].m_teamPoints << std::endl;
 		}
 		
 		//knockout teams
@@ -449,11 +442,12 @@ output_t<int> world_cup_t::knockout_winner(int minTeamId, int maxTeamId)
 		}
 		//winner's id will be saved in the first index in knockout
 		int winnerId = knockout[0].m_teamId; 
-		delete[] qualified;
 		delete[] knockout;
 		return winnerId;
 	}catch(KeyDoesntExists& e){
 		return StatusType::FAILURE;
+	}catch(std::bad_alloc& e){
+		return StatusType::ALLOCATION_ERROR;
 	}
 }
 
@@ -466,4 +460,8 @@ bool world_cup_t::is_team_exists(int teamId)
 {
 	return m_teams.exists(teamId);
 }
+
+
+
+
 

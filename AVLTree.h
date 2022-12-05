@@ -87,6 +87,8 @@ public:
 
     bool is_empty()const;
 
+    T* binary_search_closest(K key);
+
 
 private:
     Node* root;
@@ -737,6 +739,39 @@ template<class T, class K>
 typename AVLTree<T, K>::Node* AVLTree<T, K>::getRoot() const
 {
     return root;
+}
+
+template<class T, class K> 
+T* AVLTree<T, K>::binary_search_closest(K key)
+{
+    if(is_empty()){
+        return nullptr;
+    }
+    Node* closest = nullptr;
+	Node* current = root;
+	while(current)
+	{
+        if(key > current->m_key){
+            if(closest == nullptr){
+                closest = current;
+            }else{
+                if(current->m_key - key < closest->m_key - key){
+                    closest = current;
+                }
+            }
+            current = current->m_left;
+        }else if(key < current->m_key){
+            current = current->m_right;
+        }else{
+            closest = current;
+            break;
+        }
+	}
+    if(closest == nullptr){
+        return nullptr;
+    }else{
+        return closest->m_data;
+    }
 }
 
 
