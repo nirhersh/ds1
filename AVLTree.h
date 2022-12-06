@@ -163,30 +163,45 @@ T* AVLTree<T, K>::search(const K& key) const{
 template <class T, class K>
 void AVLTree<T, K>::unite_trees(AVLTree<T, K>& tree1, AVLTree<T, K>& tree2, AVLTree<T, K>& newTree)
 {
+
     int tree1Size = tree1.get_size();
     int tree2Size = tree2.get_size();
-
-
-    typename AVLTree<T, K>::Node** arrayOfTree1 = new typename AVLTree<T, K>::Node*[tree1Size];
+    typename AVLTree<T, K>::Node** arrayOfTree1 = nullptr;
+    typename AVLTree<T, K>::Node** arrayOfTree2 = nullptr;
+    if(tree1Size == 0 && tree2Size == 0){
+        return;
+    }
+    if(tree1Size != 0){
+        arrayOfTree1 = new typename AVLTree<T, K>::Node*[tree1Size];
+    } 
+    if(tree2Size != 0){
+        arrayOfTree2 = new typename AVLTree<T, K>::Node*[tree2Size];
+    } 
     tree1.in_order(arrayOfTree1);
-    typename AVLTree<T, K>::Node** arrayOfTree2 = new typename AVLTree<T, K>::Node*[tree2Size];
     tree2.in_order(arrayOfTree2);
     typename AVLTree<T, K>::Node** newArrayTree = new typename AVLTree<T, K>::Node*[tree1Size + tree2Size];
     merge(arrayOfTree1, tree1Size, arrayOfTree2,  tree2Size, newArrayTree); 
     newTree.root = array_to_tree(newArrayTree, 0, tree1Size + tree2Size - 1);
-    if(newTree.root->m_left){
-        newTree.root->m_left->m_parent = newTree.root;
+    if(newTree.root)
+    {
+        if(newTree.root->m_left){
+            newTree.root->m_left->m_parent = newTree.root;
+        }
+        if(newTree.root->m_right){
+            newTree.root->m_right->m_parent = newTree.root;
+        }
     }
-    if(newTree.root->m_right){
-        newTree.root->m_right->m_parent = newTree.root;
-    }
-    assert(newTree.root != nullptr);
     newTree.m_size = tree1Size + tree2Size;
     fix_tree_height(newTree.root);
-
-    delete[] arrayOfTree1;
-    delete[] arrayOfTree2;
-    delete[] newArrayTree;
+    if(arrayOfTree1){
+        delete[] arrayOfTree1;    
+    }
+    if(arrayOfTree2){
+        delete[] arrayOfTree2;    
+    }
+    if(newArrayTree){
+        delete[] newArrayTree;    
+    }
 }
 
 template <class T, class K>
@@ -608,11 +623,17 @@ int AVLTree<T, K>::get_size()const{
 
 template<class T, class K>
 void AVLTree<T ,K>::in_order(T** array) const{
+    if(array == nullptr){
+        return;
+    }
     in_order_recursion(array, root, 0);
 }
 
 template<class T, class K>
 void AVLTree<T ,K>::in_order(Node* array[]) const{
+    if(array == nullptr){
+        return;
+    }
     in_order_recursion(array, root, 0);
 }
 

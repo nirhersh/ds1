@@ -28,16 +28,20 @@ world_cup_t::~world_cup_t()
 
 StatusType world_cup_t::add_team(int teamId, int points)
 {
+	Team* newTeam = nullptr;
 	if(teamId <= 0 || points < 0){
         return StatusType::INVALID_INPUT;
     }
 	try{
-		Team* newTeam(new Team(teamId, points));
+		newTeam = new Team(teamId, points);
 		m_teams.push(newTeam, teamId);
 	} catch(std::bad_alloc& exc) {
 		return StatusType::ALLOCATION_ERROR;
 	}
 	catch(KeyAlreadyExists& e) {
+		if(newTeam != nullptr){
+			delete newTeam;	
+		}
 		return StatusType::FAILURE;
 	}catch(InvalidArguments& e){
 		return StatusType::INVALID_INPUT;
@@ -69,6 +73,7 @@ StatusType world_cup_t::remove_team(int teamId)
 StatusType world_cup_t::add_player(int playerId, int teamId, int gamesPlayed,
                                    int goals, int cards, bool goalKeeper)
 {
+	Player* newPlayer = nullptr;
 	if(teamId <= 0 || playerId <= 0 || teamId <= 0 || gamesPlayed < 0 || goals < 0 || cards < 0){
 		return StatusType::INVALID_INPUT;
 	}
@@ -78,7 +83,7 @@ StatusType world_cup_t::add_player(int playerId, int teamId, int gamesPlayed,
 	try{
 		Team* playersTeam = m_teams.search(teamId);
 		bool wasQualified = playersTeam->is_qulified();
-		Player* newPlayer(new Player(playerId, playersTeam, goalKeeper, gamesPlayed, goals, cards));
+		newPlayer = new Player(playerId, playersTeam, goalKeeper, gamesPlayed, goals, cards);
 		//push new player to world cup trees
 		m_allPlayersId.push(newPlayer, playerId);
 		m_allPlayersGoals.push(newPlayer, *newPlayer);
@@ -116,10 +121,19 @@ StatusType world_cup_t::add_player(int playerId, int teamId, int gamesPlayed,
 	}catch(std::bad_alloc& e){
 		return StatusType::ALLOCATION_ERROR;
 	}catch(InvalidArguments& e){
+		if(newPlayer != nullptr){
+			delete newPlayer;
+		}
 		return StatusType::INVALID_INPUT;
 	}catch(KeyAlreadyExists& e){
+		if(newPlayer != nullptr){
+			delete newPlayer;
+		}
 		return StatusType::FAILURE;
 	}catch(KeyDoesntExists& e){
+		if(newPlayer != nullptr){
+			delete newPlayer;
+		}
 		return StatusType::FAILURE;
 	}
 	return StatusType::SUCCESS;
@@ -224,7 +238,7 @@ StatusType world_cup_t::play_match(int teamId1, int teamId2)
 		team2->add_points(1);
 	}
 	team1->add_game();
-	team1->add_game();
+	team2->add_game();
 	return StatusType::SUCCESS;
 }
 
@@ -237,7 +251,7 @@ output_t<int> world_cup_t::get_num_played_games(int playerId)
 		return StatusType::FAILURE;
 	}
 	Player* player1 = m_allPlayersId.search(playerId);
-	return(player1->get_games_played() + player1->get_team()->get_games_played());
+	return(player1->get_games_played());
 }
 
 output_t<int> world_cup_t::get_team_points(int teamId)
@@ -269,36 +283,38 @@ StatusType world_cup_t::unite_teams(int teamId1, int teamId2, int newTeamId)
 	}
 	Team* team1 = m_teams.search(teamId1);
 	bool team1WasQualified = team1->is_qulified();
+	Team* left1 = team1->get_left();
+	Team* right1 = team1->get_right();
 	Team* team2 = m_teams.search(teamId2);
 	bool team2WasQualified = team2->is_qulified();
+	Team* left2 = team2->get_left();
+	Team* right2 = team2->get_right();
 	Team* newTeamTreeById = new Team(newTeamId);
 	newTeamTreeById->merge_teams(team1, team2);
 	team1->empty_team();
 	team2->empty_team();
-	remove_team(teamId1);
-	remove_team(teamId2);
 	if(team1WasQualified){
-		Team* left = team1->get_left();
-		Team* right = team1->get_right();
-		if(left){
-			left->set_right(right);
+		if(left1){
+			left1->set_right(right1);
 		}
-		if(right){
-			right->set_left(left);
+		if(right1){
+			right1->set_left(left1);
 		}
 		m_qualifiedTeams.remove(teamId1);
 	}
+
 	if(team2WasQualified){
-		Team* left = team2->get_left();
-		Team* right = team2->get_right();
-		if(left){
-			left->set_right(right);
+		if(left2){
+			left2->set_right(right2);
 		}
-		if(right){
-			right->set_left(left);
+		if(right2){
+			right2->set_left(left2);
 		}
 		m_qualifiedTeams.remove(teamId2);
 	}
+
+	remove_team(teamId1);
+	remove_team(teamId2);
 	m_teams.push(newTeamTreeById, newTeamId);
 	if(newTeamTreeById->is_qulified()){
 		m_qualifiedTeams.push(newTeamTreeById, newTeamTreeById->get_id());
@@ -430,14 +446,13 @@ output_t<int> world_cup_t::knockout_winner(int minTeamId, int maxTeamId)
 		}
 		bool winner = false;
 		int steps = 1, knockout_size = 0;
-		SimulateTeam* knockout = new SimulateTeam[maxTeamId - minTeamId];
+		SimulateTeam* knockout = new SimulateTeam[maxTeamId - minTeamId + 1];
 		Team* currentTeam = minTeam;
-		while(currentTeam){
-			if(currentTeam->get_id() > maxTeamId){
+		for(; knockout_size < maxTeamId - minTeamId + 1; knockout_size++){
+			if(currentTeam == nullptr || currentTeam->get_id() > maxTeamId){
 				break;
 			}
 			knockout[knockout_size] = SimulateTeam(currentTeam->get_id(), currentTeam->get_team_score());
-			knockout_size++;
 			currentTeam = currentTeam->get_right();
 		}
 

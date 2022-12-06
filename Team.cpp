@@ -100,7 +100,7 @@ void Team::add_player(Player* newPlayer){
 }
 
 void Team::remove_player(Player player){
-    if(!m_topScorer && *m_topScorer == player){
+    if(m_topScorer && *m_topScorer == player){
         m_topScorer = PlayersByGoals.get_preceding_value(player);
     }
     playersById.remove(player.get_id());

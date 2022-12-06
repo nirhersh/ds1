@@ -139,6 +139,16 @@ TEST_CASE("Insert and remove team")
         REQUIRE(res == StatusType::INVALID_INPUT);
         delete obj;
     }
+
+    SECTION("remove team with Player")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(1, 2);
+        res = obj->add_player(1, 1, 3, 3, 3, false);
+        res = obj->remove_team(1);
+        REQUIRE(res == StatusType::FAILURE);
+        delete obj;
+    }
 }
 
 TEST_CASE("add and remove player")
@@ -398,6 +408,352 @@ TEST_CASE("add and remove player")
         delete obj;
     }
 
+    SECTION("inserting a non goalie makes a team fit")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(7, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(70, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(71, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(72, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(73, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(74, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(75, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(76, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(77, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(78, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(79, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(80, 7, 9, 1, 1, true);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> res1 = obj->knockout_winner(7, 10);
+        REQUIRE(res1.status() == StatusType::SUCCESS);
+        REQUIRE(res1.ans() == 7);
+
+        res = obj->add_team(8, 2000);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(870, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(871, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(872, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(873, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(874, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(875, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(876, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(877, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(878, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(880, 8, 9, 1, 1, true);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> res2 = obj->knockout_winner(7, 10);
+        REQUIRE(res2.status() == StatusType::SUCCESS);
+        REQUIRE(res2.ans() == 7);
+
+        res = obj->add_player(879, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        
+        output_t<int> res3 = obj->knockout_winner(7, 10);
+        REQUIRE(res3.status() == StatusType::SUCCESS);
+        REQUIRE(res3.ans() == 8);
+        delete obj;
+    }
+
+    SECTION("inserting a non goalie to unfit team keeps it unfit")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(7, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(70, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(71, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(72, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(73, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(74, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(75, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(76, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(77, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(78, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(79, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(80, 7, 9, 1, 1, true);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> res1 = obj->knockout_winner(7, 10);
+        REQUIRE(res1.status() == StatusType::SUCCESS);
+        REQUIRE(res1.ans() == 7);
+
+        res = obj->add_team(8, 2000);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(870, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(871, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(872, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(873, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(874, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(875, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(876, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(877, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(878, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(880, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> res2 = obj->knockout_winner(7, 10);
+        REQUIRE(res2.status() == StatusType::SUCCESS);
+        REQUIRE(res2.ans() == 7);
+
+        res = obj->add_player(879, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        
+        output_t<int> res3 = obj->knockout_winner(7, 10);
+        REQUIRE(res3.status() == StatusType::SUCCESS);
+        REQUIRE(res3.ans() == 7);
+        delete obj;
+    }
+
+    SECTION("inserting a goalie makes a team fit")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(7, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(70, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(71, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(72, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(73, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(74, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(75, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(76, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(77, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(78, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(79, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(80, 7, 9, 1, 1, true);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> res1 = obj->knockout_winner(7, 10);
+        REQUIRE(res1.status() == StatusType::SUCCESS);
+        REQUIRE(res1.ans() == 7);
+
+        res = obj->add_team(8, 2000);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(870, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(871, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(872, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(873, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(874, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(875, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(876, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(877, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(878, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(880, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> res2 = obj->knockout_winner(7, 10);
+        REQUIRE(res2.status() == StatusType::SUCCESS);
+        REQUIRE(res2.ans() == 7);
+
+        res = obj->add_player(879, 8, 9, 1, 1, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        
+        output_t<int> res3 = obj->knockout_winner(7, 10);
+        REQUIRE(res3.status() == StatusType::SUCCESS);
+        REQUIRE(res3.ans() == 8);
+        delete obj;
+    }
+
+    SECTION("inserting a goalie to a 11+ team makes a team fit")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(7, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(70, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(71, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(72, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(73, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(74, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(75, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(76, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(77, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(78, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(79, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(80, 7, 9, 1, 1, true);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> res1 = obj->knockout_winner(7, 10);
+        REQUIRE(res1.status() == StatusType::SUCCESS);
+        REQUIRE(res1.ans() == 7);
+
+        res = obj->add_team(8, 2000);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(870, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(871, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(872, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(873, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(874, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(875, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(876, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(877, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(878, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(880, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1238, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> res2 = obj->knockout_winner(7, 10);
+        REQUIRE(res2.status() == StatusType::SUCCESS);
+        REQUIRE(res2.ans() == 7);
+
+        res = obj->add_player(879, 8, 9, 1, 1, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        
+        output_t<int> res3 = obj->knockout_winner(7, 10);
+        REQUIRE(res3.status() == StatusType::SUCCESS);
+        REQUIRE(res3.ans() == 8);
+        delete obj;
+    }
+    
+    
+    SECTION("inserting a player to a fit team makes no difference")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(7, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(70, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(71, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(72, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(73, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(74, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(75, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(76, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(77, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(78, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(79, 7, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(80, 7, 9, 1, 1, true);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> res1 = obj->knockout_winner(7, 10);
+        REQUIRE(res1.status() == StatusType::SUCCESS);
+        REQUIRE(res1.ans() == 7);
+
+        res = obj->add_team(8, 2000);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(870, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(871, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(872, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(873, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(874, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(875, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(876, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(877, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(878, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(880, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1238, 8, 9, 1, 1, true);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> res2 = obj->knockout_winner(7, 10);
+        REQUIRE(res2.status() == StatusType::SUCCESS);
+        REQUIRE(res2.ans() == 8);
+
+        res = obj->add_player(879, 8, 9, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        
+        output_t<int> res3 = obj->knockout_winner(7, 10);
+        REQUIRE(res3.status() == StatusType::SUCCESS);
+        REQUIRE(res3.ans() == 8);
+        delete obj;
+    }
+    
+
     SECTION("simple remove player")
     {
         world_cup_t *obj = new world_cup_t();
@@ -584,6 +940,68 @@ TEST_CASE("update player stats")
         REQUIRE(res == StatusType::SUCCESS);
         res = obj->update_player_stats(1, 1, 1, 1);
         REQUIRE(res == StatusType::SUCCESS);
+        delete obj;
+    }
+
+    SECTION("simple update player stats changes get_all_players")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(1, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1, 1, 3, 3, 3, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2, 1, 3, 4, 3, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        int players[10]={0};
+        res = obj->get_all_players(1, players);
+        REQUIRE(res == StatusType::SUCCESS);
+        REQUIRE(players[0] == 1);
+        res = obj->update_player_stats(1, 90, 90, 90);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->get_all_players(1, players);
+        REQUIRE(res == StatusType::SUCCESS);
+        REQUIRE(players[0] == 2);
+        delete obj;
+    }
+    SECTION("simple update player stats changes top scorer all")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(1, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1, 1, 3, 3, 3, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2, 1, 3, 4, 3, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        output_t<int> resn0 = obj->get_top_scorer(-1);
+        REQUIRE(resn0.status() == StatusType::SUCCESS);
+        REQUIRE(resn0.ans() == 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->update_player_stats(1, 90, 90, 90);
+        REQUIRE(res == StatusType::SUCCESS);
+        output_t<int> resn1 = obj->get_top_scorer(-1);
+        REQUIRE(resn1.status() == StatusType::SUCCESS);
+        REQUIRE(resn1.ans() == 1);
+        delete obj;
+    }
+
+    SECTION("simple update player stats changes top scorer all")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(1, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1, 1, 3, 3, 3, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2, 1, 3, 4, 3, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        output_t<int> resn0 = obj->get_top_scorer(1);
+        REQUIRE(resn0.status() == StatusType::SUCCESS);
+        REQUIRE(resn0.ans() == 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->update_player_stats(1, 90, 90, 90);
+        REQUIRE(res == StatusType::SUCCESS);
+        output_t<int> resn1 = obj->get_top_scorer(1);
+        REQUIRE(resn1.status() == StatusType::SUCCESS);
+        REQUIRE(resn1.ans() == 1);
         delete obj;
     }
 
@@ -816,6 +1234,26 @@ TEST_CASE("get num played games")
         delete obj;
     }
 
+    SECTION("update changes get played")
+    {
+        world_cup_t *obj = new world_cup_t();
+
+        StatusType res = obj->add_team(1, 3);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1001, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        output_t<int> resn0 = obj->get_num_played_games(1001);
+        REQUIRE(resn0.status() == StatusType::SUCCESS);
+        REQUIRE(resn0.ans() == 10);
+        res = obj->update_player_stats(1001, 1, 1, 1);
+        REQUIRE(res == StatusType::SUCCESS);
+        output_t<int> resn = obj->get_num_played_games(1001);
+        REQUIRE(resn.status() == StatusType::SUCCESS);
+        REQUIRE(resn.ans() == 11);
+
+        delete obj;
+    }
+
     SECTION("get num played for non exist player")
     {
         world_cup_t *obj = new world_cup_t();
@@ -858,6 +1296,82 @@ TEST_CASE("get num played games")
 
         delete obj;
     }
+
+SECTION("games played after match")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(1, 10000);
+        REQUIRE(res == StatusType::SUCCESS);
+        
+        res = obj->add_player(1001, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1002, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1011, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1012, 1, 10, 0, 0, false);
+        res = obj->add_player(103, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(104, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(105, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(106, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(107, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(108, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1015, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1016, 1, 10, 0, 0, true);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        res = obj->add_team(2, 20000);
+        res = obj->add_player(2001, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2002, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2011, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2012, 2, 10, 0, 0, false);
+        res = obj->add_player(203, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(204, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(205, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(206, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(207, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(208, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2015, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2016, 2, 10, 0, 0, true);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> resn1 = obj->get_num_played_games(1001);
+        REQUIRE(resn1.status() == StatusType::SUCCESS);
+        REQUIRE(resn1.ans() == 10);
+        output_t<int> resn2 = obj->get_num_played_games(2001);
+        REQUIRE(resn2.status() == StatusType::SUCCESS);
+        REQUIRE(resn2.ans() == 10);
+
+        res = obj->play_match(1, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> resn3 = obj->get_num_played_games(1001);
+        REQUIRE(resn3.status() == StatusType::SUCCESS);
+        REQUIRE(resn3.ans() == 11);
+        output_t<int> resn4 = obj->get_num_played_games(2001);
+        REQUIRE(resn4.status() == StatusType::SUCCESS);
+        REQUIRE(resn4.ans() == 11);
+        delete obj;
+
+    }
+
 
     SECTION("segel test")
     {
@@ -1020,6 +1534,159 @@ TEST_CASE("get team points")
         delete obj;
     }
 
+    SECTION("team points changes after match win/loss")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(1, 10000);
+        REQUIRE(res == StatusType::SUCCESS);
+        
+        res = obj->add_player(1001, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1002, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1011, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1012, 1, 10, 0, 0, false);
+        res = obj->add_player(103, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(104, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(105, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(106, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(107, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(108, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1015, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1016, 1, 10, 0, 0, true);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        res = obj->add_team(2, 20000);
+        res = obj->add_player(2001, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2002, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2011, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2012, 2, 10, 0, 0, false);
+        res = obj->add_player(203, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(204, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(205, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(206, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(207, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(208, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2015, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2016, 2, 10, 0, 0, true);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> resn1 = obj->get_team_points(1);
+        REQUIRE(resn1.status() == StatusType::SUCCESS);
+        REQUIRE(resn1.ans() == 10000);
+        output_t<int> resn2 = obj->get_team_points(2);
+        REQUIRE(resn2.status() == StatusType::SUCCESS);
+        REQUIRE(resn2.ans() == 20000);
+
+        res = obj->play_match(1, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> resn3 = obj->get_team_points(1);
+        REQUIRE(resn3.status() == StatusType::SUCCESS);
+        REQUIRE(resn3.ans() == 10000);
+        output_t<int> resn4 = obj->get_team_points(2);
+        REQUIRE(resn4.status() == StatusType::SUCCESS);
+        REQUIRE(resn4.ans() == 20003);
+
+        delete obj;
+
+    }
+
+    SECTION("team points changes after match tie")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(1, 10000);
+        REQUIRE(res == StatusType::SUCCESS);
+        
+        res = obj->add_player(1001, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1002, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1011, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1012, 1, 10, 0, 0, false);
+        res = obj->add_player(103, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(104, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(105, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(106, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(107, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(108, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1015, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1016, 1, 10, 0, 0, true);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        res = obj->add_team(2, 10000);
+        res = obj->add_player(2001, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2002, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2011, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2012, 2, 10, 0, 0, false);
+        res = obj->add_player(203, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(204, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(205, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(206, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(207, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(208, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2015, 2, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2016, 2, 10, 0, 0, true);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> resn1 = obj->get_team_points(1);
+        REQUIRE(resn1.status() == StatusType::SUCCESS);
+        REQUIRE(resn1.ans() == 10000);
+        output_t<int> resn2 = obj->get_team_points(2);
+        REQUIRE(resn2.status() == StatusType::SUCCESS);
+        REQUIRE(resn2.ans() == 10000);
+
+        res = obj->play_match(1, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> resn3 = obj->get_team_points(1);
+        REQUIRE(resn3.status() == StatusType::SUCCESS);
+        REQUIRE(resn3.ans() == 10001);
+        output_t<int> resn4 = obj->get_team_points(2);
+        REQUIRE(resn4.status() == StatusType::SUCCESS);
+        REQUIRE(resn4.ans() == 10001);
+
+        delete obj;
+
+    }
+
+
     SECTION("get_team_points negative teamid")
     {
         world_cup_t *obj = new world_cup_t();
@@ -1181,6 +1848,20 @@ TEST_CASE("get_top_scorer")
         delete obj;
     }
 
+    SECTION("get_top_scorer in empty team while another player exists")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(1, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_team(2, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1001, 2, 10, 15, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        output_t<int> resn1 = obj->get_top_scorer(1);
+        REQUIRE(resn1.status() == StatusType::FAILURE);
+        delete obj;
+    }
+
     SECTION("get_top_scorer in empy all")
     {
         world_cup_t *obj = new world_cup_t();
@@ -1201,6 +1882,30 @@ TEST_CASE("get_top_scorer")
         REQUIRE(res == StatusType::SUCCESS);
         res = obj->add_player(1003, 1, 10, 3, 0, false);
         REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1004, 1, 10, 33, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1005, 1, 10, 0, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        output_t<int> resn1 = obj->get_top_scorer(1);
+        REQUIRE(resn1.status() == StatusType::SUCCESS);
+        REQUIRE(resn1.ans() == 1004);
+
+        delete obj;
+    }
+    SECTION("get_top_scorer changes after player insertion")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(1, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1001, 1, 10, 15, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1002, 1, 10, 20, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1003, 1, 10, 3, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        output_t<int> resn0 = obj->get_top_scorer(1);
+        REQUIRE(resn0.status() == StatusType::SUCCESS);
+        REQUIRE(resn0.ans() == 1002);
         res = obj->add_player(1004, 1, 10, 33, 0, false);
         REQUIRE(res == StatusType::SUCCESS);
         res = obj->add_player(1005, 1, 10, 0, 0, false);
@@ -1475,6 +2180,36 @@ TEST_CASE("get_all_players_count")
         delete obj;
     }
 
+    SECTION("count after unite")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(3, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_team(4, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1001, 3, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1002, 3, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1003, 3, 1, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1004, 4, 1, 1, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1005, 4, 1, 1, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1006, 4, 1, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1007, 4, 1, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->unite_teams(3, 4, 5);
+        REQUIRE(res == StatusType::SUCCESS);
+        output_t<int> resn5 = obj->get_all_players_count(5);
+        REQUIRE(resn5.status() == StatusType::SUCCESS);
+        REQUIRE(resn5.ans() == 7);
+        
+        delete obj;
+    }
+
     SECTION("get_all_players_count big")
     {
         world_cup_t *obj = new world_cup_t();
@@ -1605,6 +2340,80 @@ TEST_CASE("get_closest_player")
         output_t<int> resn2 = obj->get_closest_player(1002, 1);
         REQUIRE(resn2.status() == StatusType::SUCCESS);
         REQUIRE(resn2.ans() == 1001);
+        delete obj;
+    }
+
+    SECTION("get_closest_player player on another team")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(1, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_team(2, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1001, 1, 10, 15, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1003, 1, 99, 99, 99, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1002, 2, 10, 36, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        output_t<int> resn1 = obj->get_closest_player(1001, 1);
+        REQUIRE(resn1.status() == StatusType::SUCCESS);
+        REQUIRE(resn1.ans() == 1002);
+        output_t<int> resn2 = obj->get_closest_player(1002, 2);
+        REQUIRE(resn2.status() == StatusType::SUCCESS);
+        REQUIRE(resn2.ans() == 1001);
+        delete obj;
+    }
+
+    SECTION("get_closest_player changes on update")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(1, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_team(2, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1001, 1, 10, 15, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1003, 1, 99, 99, 99, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1002, 2, 10, 36, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        output_t<int> resn1 = obj->get_closest_player(1001, 1);
+        REQUIRE(resn1.status() == StatusType::SUCCESS);
+        REQUIRE(resn1.ans() == 1002);
+        output_t<int> resn2 = obj->get_closest_player(1002, 2);
+        REQUIRE(resn2.status() == StatusType::SUCCESS);
+        REQUIRE(resn2.ans() == 1001);
+        obj->update_player_stats(1002, 89, 60, 99);
+        output_t<int> resn3 = obj->get_closest_player(1002, 2);
+        REQUIRE(resn3.status() == StatusType::SUCCESS);
+        REQUIRE(resn3.ans() == 1003);
+        delete obj;
+    }
+
+    SECTION("get_closest_player changes on removal")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(1, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_team(2, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1001, 1, 10, 15, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1003, 1, 99, 99, 99, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1002, 2, 10, 36, 0, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        output_t<int> resn1 = obj->get_closest_player(1001, 1);
+        REQUIRE(resn1.status() == StatusType::SUCCESS);
+        REQUIRE(resn1.ans() == 1002);
+        output_t<int> resn2 = obj->get_closest_player(1002, 2);
+        REQUIRE(resn2.status() == StatusType::SUCCESS);
+        REQUIRE(resn2.ans() == 1001);
+        obj->remove_player(1001);
+        output_t<int> resn3 = obj->get_closest_player(1002, 2);
+        REQUIRE(resn3.status() == StatusType::SUCCESS);
+        REQUIRE(resn3.ans() == 1003);
         delete obj;
     }
 
@@ -2380,6 +3189,89 @@ TEST_CASE("unite_teams")
         delete obj;
     }
 
+
+    SECTION("unite_teams empty")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(1, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_team(2, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->unite_teams(1, 2, 3);
+        REQUIRE(res == StatusType::SUCCESS);
+        int players[10] = {};
+        res = obj->get_all_players(3, players);
+        REQUIRE(res == StatusType::FAILURE);
+        REQUIRE(players[0] == 0);
+        REQUIRE(players[1] == 0);
+        REQUIRE(players[2] == 0);
+        REQUIRE(players[3] == 0);
+        REQUIRE(players[4] == 0);
+        REQUIRE(players[5] == 0);
+        REQUIRE(players[6] == 0);
+        REQUIRE(players[7] == 0);
+        REQUIRE(players[8] == 0);
+        REQUIRE(players[9] == 0);
+        delete obj;
+    }
+    SECTION("unite_teams team1 empty")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(1, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_team(2, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1002, 2, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->unite_teams(1, 2, 3);
+        REQUIRE(res == StatusType::SUCCESS);
+        int players[10] = {};
+        res = obj->get_all_players(3, players);
+        REQUIRE(res == StatusType::SUCCESS);
+        REQUIRE(players[0] == 1002);
+        REQUIRE(players[1] == 0);
+        REQUIRE(players[2] == 0);
+        REQUIRE(players[3] == 0);
+        REQUIRE(players[4] == 0);
+        REQUIRE(players[5] == 0);
+        REQUIRE(players[6] == 0);
+        REQUIRE(players[7] == 0);
+        REQUIRE(players[8] == 0);
+        REQUIRE(players[9] == 0);
+        delete obj;
+    }
+
+    SECTION("unite_teams team 2 empty")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(1, 2);
+        res = obj->add_player(1002, 1, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_team(2, 2);
+        REQUIRE(res == StatusType::SUCCESS);
+        
+        res = obj->unite_teams(1, 2, 3);
+        REQUIRE(res == StatusType::SUCCESS);
+        int players[10] = {};
+        res = obj->get_all_players(3, players);
+        REQUIRE(res == StatusType::SUCCESS);
+        REQUIRE(players[0] == 1002);
+        REQUIRE(players[1] == 0);
+        REQUIRE(players[2] == 0);
+        REQUIRE(players[3] == 0);
+        REQUIRE(players[4] == 0);
+        REQUIRE(players[5] == 0);
+        REQUIRE(players[6] == 0);
+        REQUIRE(players[7] == 0);
+        REQUIRE(players[8] == 0);
+        REQUIRE(players[9] == 0);
+
+        
+
+        delete obj;
+    }
+
     SECTION("unite_teams simple")
     {
         world_cup_t *obj = new world_cup_t();
@@ -2389,7 +3281,7 @@ TEST_CASE("unite_teams")
         REQUIRE(res == StatusType::SUCCESS);
         res = obj->add_team(2, 2);
         REQUIRE(res == StatusType::SUCCESS);
-        res = obj->add_player(1002, 2, 1, 3, 4, false);\
+        res = obj->add_player(1002, 2, 1, 3, 4, false);
         REQUIRE(res == StatusType::SUCCESS);
         res = obj->unite_teams(1, 2, 3);
         REQUIRE(res == StatusType::SUCCESS);
@@ -2406,9 +3298,11 @@ TEST_CASE("unite_teams")
         REQUIRE(players[7] == 0);
         REQUIRE(players[8] == 0);
         REQUIRE(players[9] == 0);
-
+        res = obj->get_all_players(3, players);
+        REQUIRE(res == StatusType::SUCCESS);
         res = obj->add_team(3, 2);
         REQUIRE(res == StatusType::FAILURE);
+
         res = obj->add_team(1, 2);
         REQUIRE(res == StatusType::SUCCESS);
         res = obj->add_team(2, 2);
@@ -2420,7 +3314,6 @@ TEST_CASE("unite_teams")
         res = obj->add_player(1002, 3, 1, 3, 4, false);
         REQUIRE(res == StatusType::FAILURE);
         res = obj->add_player(1003, 3, 1, 1, 1, false);
-        //res = obj->add_player(1003, 5, 1, 1, 1, false);
         REQUIRE(res == StatusType::SUCCESS);
         res = obj->add_player(1004, 4, 1, 1, 2, true);
         REQUIRE(res == StatusType::SUCCESS);
@@ -2438,16 +3331,31 @@ TEST_CASE("unite_teams")
         REQUIRE(res == StatusType::SUCCESS);
         res = obj->add_team(4, 2);
         REQUIRE(res == StatusType::SUCCESS);
-        res = obj->add_player(1008, 3, 1, 1, 1, false);
+        res = obj->add_player(1008, 3, 1, 2, 1, false);
         REQUIRE(res == StatusType::SUCCESS);
-        res = obj->add_player(1004, 3, 1, 1, 1, false);
+        res = obj->add_player(4444, 3, 1, 9, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1004, 3, 1, 3, 1, false);
         REQUIRE(res == StatusType::FAILURE);
-        res = obj->add_player(1009, 4, 1, 1, 1, false);
+        res = obj->add_player(1009, 4, 2, 1, 1, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(6666, 4, 1, 11, 1, false);
         REQUIRE(res == StatusType::SUCCESS);
         res = obj->add_player(1005, 4, 1, 1, 1, false);
         REQUIRE(res == StatusType::FAILURE);
         res = obj->unite_teams(3, 4, 3);
         REQUIRE(res == StatusType::SUCCESS);
+
+        output_t<int> resn1 = obj->get_top_scorer(3);
+        REQUIRE(resn1.status() == StatusType::SUCCESS);
+        REQUIRE(resn1.ans() == 6666);
+        output_t<int> resn2 = obj->get_num_played_games(1009);
+        REQUIRE(resn2.status() == StatusType::SUCCESS);
+        REQUIRE(resn2.ans() == 2);
+        output_t<int> resn3 = obj->get_num_played_games(1008);
+        REQUIRE(resn3.status() == StatusType::SUCCESS);
+        REQUIRE(resn3.ans() == 1);
+
         res = obj->add_team(3, 2);
         REQUIRE(res == StatusType::FAILURE);
 
@@ -2458,6 +3366,99 @@ TEST_CASE("unite_teams")
 
         delete obj;
     }
+
+    SECTION("unite_teams changes match outcome")
+    {
+        world_cup_t *obj = new world_cup_t();
+        StatusType res = obj->add_team(1, 10000);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_team(2, 20000);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_team(3, 30000);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1001, 1, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1002, 1, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1003, 1, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1004, 1, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1005, 1, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1006, 1, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1007, 1, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1008, 1, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1009, 1, 1, 40, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1010, 1, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1011, 1, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(1012, 1, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2001, 2, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2002, 2, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2003, 2, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2004, 2, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2005, 2, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2006, 2, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2007, 2, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2008, 2, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2009, 2, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2010, 2, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2011, 2, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(2012, 2, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+
+        res = obj->add_player(3001, 3, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(3002, 3, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(3003, 3, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(3004, 3, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(3005, 3, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(3006, 3, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(3007, 3, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(3008, 3, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(3009, 3, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(3010, 3, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(3011, 3, 1, 5, 2, true);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->add_player(3012, 3, 1, 3, 4, false);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->unite_teams(1, 2, 4);
+        REQUIRE(res == StatusType::SUCCESS);
+        res = obj->play_match(3, 4);
+        REQUIRE(res == StatusType::SUCCESS);
+        output_t<int> resn1 = obj->get_team_points(4);
+        REQUIRE(resn1.status() == StatusType::SUCCESS);
+        REQUIRE(resn1.ans() == 30003);
+        delete obj;
+    }
+
 
     SECTION("unite_teams that makes it legal team")
     {
@@ -2817,6 +3818,39 @@ TEST_CASE("knockout")
 
         REQUIRE(res10.ans() == 9);
 
+        delete obj;
+    }
+
+
+    SECTION("1 team")
+    {
+        world_cup_t *obj = new world_cup_t();
+        int playerId = 1;
+        StatusType res;
+        for (int teamId = 1; teamId < 2; teamId += 1)
+        {
+            res = obj->add_team(teamId, 1000 / ((6 - teamId) * (6 - teamId)));
+            REQUIRE(res == StatusType::SUCCESS);
+
+            for (int startingId = playerId; playerId < startingId + 10 + teamId; ++playerId)
+            {
+                res = obj->add_player(playerId, teamId, 1, playerId, 3, true);
+                REQUIRE(res == StatusType::SUCCESS);
+            }
+            ++playerId;
+        }
+        // Strengths team1:73 team3:319 team5:1485 team7:1816 team9:1384
+        output_t<int> res1 = obj->knockout_winner(1, 9);
+        REQUIRE(res1.status() == StatusType::SUCCESS);
+        REQUIRE(res1.ans() == 1);
+        delete obj;
+    }
+
+    SECTION("no teams")
+    {
+        world_cup_t *obj = new world_cup_t();
+        output_t<int> res1 = obj->knockout_winner(1, 9);
+        REQUIRE(res1.status() == StatusType::FAILURE);
         delete obj;
     }
 }
