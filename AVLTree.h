@@ -180,7 +180,6 @@ void AVLTree<T, K>::unite_trees(AVLTree<T, K>& tree1, AVLTree<T, K>& tree2, AVLT
     if(newTree.root->m_right){
         newTree.root->m_right->m_parent = newTree.root;
     }
-    std::cout << "Fwsfaea" << std::endl;
     assert(newTree.root != nullptr);
     newTree.m_size = tree1Size + tree2Size;
     fix_tree_height(newTree.root);
@@ -759,7 +758,7 @@ T* AVLTree<T, K>::binary_search_closest(K key)
 	Node* current = root;
 	while(current)
 	{
-        if(key > current->m_key){
+        if(key < current->m_key){
             if(closest == nullptr){
                 closest = current;
             }else{
@@ -768,7 +767,7 @@ T* AVLTree<T, K>::binary_search_closest(K key)
                 }
             }
             current = current->m_left;
-        }else if(key < current->m_key){
+        }else if(key > current->m_key){
             current = current->m_right;
         }else{
             closest = current;

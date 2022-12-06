@@ -268,16 +268,40 @@ StatusType world_cup_t::unite_teams(int teamId1, int teamId2, int newTeamId)
 		return StatusType::FAILURE;
 	}
 	Team* team1 = m_teams.search(teamId1);
+	bool team1WasQualified = team1->is_qulified();
 	Team* team2 = m_teams.search(teamId2);
+	bool team2WasQualified = team2->is_qulified();
 	Team* newTeamTreeById = new Team(newTeamId);
 	newTeamTreeById->merge_teams(team1, team2);
 	team1->empty_team();
 	team2->empty_team();
 	remove_team(teamId1);
 	remove_team(teamId2);
+	if(team1WasQualified){
+		Team* left = team1->get_left();
+		Team* right = team1->get_right();
+		if(left){
+			left->set_right(right);
+		}
+		if(right){
+			right->set_left(left);
+		}
+		m_qualifiedTeams.remove(teamId1);
+	}
+	if(team2WasQualified){
+		Team* left = team2->get_left();
+		Team* right = team2->get_right();
+		if(left){
+			left->set_right(right);
+		}
+		if(right){
+			right->set_left(left);
+		}
+		m_qualifiedTeams.remove(teamId2);
+	}
 	m_teams.push(newTeamTreeById, newTeamId);
 	if(newTeamTreeById->is_qulified()){
-		m_qualifiedTeams.push(newTeamTreeById, newTeamId);
+		m_qualifiedTeams.push(newTeamTreeById, newTeamTreeById->get_id());
 		Team* newLeft = m_qualifiedTeams.get_preceding_value(newTeamId);
 		newTeamTreeById->set_left(newLeft);
 		if(newLeft){

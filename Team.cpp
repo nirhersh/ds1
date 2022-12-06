@@ -54,7 +54,7 @@ Player* Team::get_player(int playerId) const{
 }
 
 bool Team::is_qulified(){
-    if(m_hasGoalkeeper && playersById.get_size() >= 11){
+    if(m_goalkeeperCounter && playersById.get_size() >= 11){
         return true;
     }else{
         return false;
