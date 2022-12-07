@@ -4,11 +4,9 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <stdbool.h>
 #include "Team.h"
 #include "wet1util.h"
 #include "Team.h"
-#include <memory>
 #include "Exception.h"
 #include <cstdlib>
 class Team;

@@ -1,8 +1,6 @@
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 
-#include <string>
-
 
 class KeyAlreadyExists : public std::exception{
 public:

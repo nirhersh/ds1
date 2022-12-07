@@ -4,9 +4,7 @@
 
 #include "wet1util.h"
 #include "Exception.h"
-#include <memory>
 #include <assert.h>
-#include <stdbool.h>
 #include <iostream>
 
 template <class T, class K>

@@ -229,9 +229,9 @@ StatusType world_cup_t::play_match(int teamId1, int teamId2)
 	//apply match
 	Team* team1 = m_qualifiedTeams.search(teamId1);
 	Team* team2 = m_qualifiedTeams.search(teamId2);
-	if(team2->get_team_score() > team2->get_team_score()){
+	if(team1->get_team_score() > team2->get_team_score()){
 		team1->add_points(3);
-	} else if(team2->get_team_score() < team2->get_team_score()){
+	} else if(team1->get_team_score() < team2->get_team_score()){
 		team2->add_points(3);
 	} else{
 		team1->add_points(1);
